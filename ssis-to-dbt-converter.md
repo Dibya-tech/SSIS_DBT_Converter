@@ -146,9 +146,9 @@ What's your instinct on where to start?
 ### User
 
 1. Control Flow
-2. Not sure shared my project architecture 
+2. Not sure shared my project architecture
 3. Create one folder per dtsx and create one model per flow
-4. Web UI 
+4. Web UI
 
 Discuss with me
 
@@ -372,7 +372,7 @@ It also gives you a **deliverable for your project kickoff** — a clear breakdo
 Do you want the audit tool to also **look at the SQL inside Execute SQL Tasks** and score that too? For example:
 
 - Simple `SELECT ... FROM ... JOIN` → ✅ easy dbt model
-- `EXEC stored_procedure` → ⚠️ needs stored proc migration first  
+- `EXEC stored_procedure` → ⚠️ needs stored proc migration first
 - `MERGE INTO` (upsert) → ⚠️ needs dbt snapshot or incremental strategy
 - `TRUNCATE + INSERT` pattern → ⚠️ becomes dbt `materialized='table'`
 - Dynamic SQL (`EXEC(@sql)`) → 🔴 very hard to convert
@@ -392,4 +392,3 @@ What would be most useful to you **at project kickoff next month**?
 My instinct would be **option 1 first** — go into that project knowing your packages inside out, rather than discovering surprises mid-migration. What do you think?
 
 ---
-
