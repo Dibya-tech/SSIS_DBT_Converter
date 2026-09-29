@@ -1,0 +1,20 @@
+{
+  ".claude/settings.json": {
+    "mtime": 1790676232.4982164,
+    "seen": 1790684994.1686754,
+    "ast_hash": "d7f6bebe66019bdc998d2e7f3935ba73",
+    "semantic_hash": ""
+  },
+  "CLAUDE.md": {
+    "mtime": 1790676232.4395795,
+    "seen": 1790684994.1686754,
+    "ast_hash": "8a6643a420fdad6bfb583523bc6cef16",
+    "semantic_hash": ""
+  },
+  "ssis-to-dbt-converter.md": {
+    "mtime": 1790675901.9767036,
+    "seen": 1790684994.1686754,
+    "ast_hash": "f65e41ebc4febdeba264ae3980ac3644",
+    "semantic_hash": ""
+  }
+}
