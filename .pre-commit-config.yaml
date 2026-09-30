@@ -1,4 +1,4 @@
-exclude: ^(graphify-out/|CLAUDE\.md$)
+exclude: ^(graphify-out/|CLAUDE\.md$|.*\.zip$)
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
