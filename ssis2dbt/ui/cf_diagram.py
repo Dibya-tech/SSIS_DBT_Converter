@@ -1,4 +1,4 @@
-"""Render a Package's Control Flow as an interactive HTML/SVG diagram.
+"""Render a Package's Control Flow as an HTML/SVG diagram.
 
 Mirrors the SSIS Control Flow designer tab:
   - Green rounded box  = ForEach / Sequence container (with children inside)
@@ -6,10 +6,10 @@ Mirrors the SSIS Control Flow designer tab:
   - Orange node        = ExecuteSQL task
   - Gray node          = other task types
   - Bezier arrows      = precedence constraints
+  - Parallel branches at the same depth are centred side-by-side
 """
 from __future__ import annotations
 
-import json
 from collections import defaultdict
 
 from ..ir.model import Package
@@ -43,8 +43,9 @@ NODE_W        = 200
 NODE_H        = 68
 MARGIN        = 50
 ROW_GAP       = 100   # vertical gap between top-level task rows
+BRANCH_GAP    = 50    # horizontal gap between sibling tasks at the same depth
 INNER_ROW_GAP = 80    # vertical gap between rows inside a container
-INNER_COL_GAP = 220   # horizontal gap between columns inside a container
+INNER_COL_GAP = 50    # horizontal gap between columns inside a container
 CONTAINER_PAD = 30    # padding inside container around children
 CONTAINER_HDR = 30    # container header band height
 
@@ -80,12 +81,14 @@ def build_cf_graph_data(pkg: Package) -> dict:
     precedence_map = {t.id: list(t.precedence) for t in pkg.tasks}
 
     # Separate top-level tasks from children (inside containers)
-    top_ids  = [t.id for t in pkg.tasks if t.parent_id is None]
+    top_ids = [t.id for t in pkg.tasks if t.parent_id is None]
     children_by_parent: dict[str, list[str]] = defaultdict(list)
     for t in pkg.tasks:
         if t.parent_id:
             children_by_parent[t.parent_id].append(t.id)
 
+    # Preserve original task order for consistent sibling ordering
+    task_order = {t.id: i for i, t in enumerate(pkg.tasks)}
     task_by_id = {t.id: t for t in pkg.tasks}
 
     # ── Step 1: compute container inner layouts (bottom-up) ──────────────────
@@ -98,24 +101,31 @@ def build_cf_graph_data(pkg: Package) -> dict:
         for cid, lvl in child_levels.items():
             by_lvl[lvl].append(cid)
 
+        # Sort siblings by original task order
+        for ids in by_lvl.values():
+            ids.sort(key=lambda cid: task_order.get(cid, 999))
+
         max_siblings = max((len(v) for v in by_lvl.values()), default=1)
         num_levels   = max(child_levels.values(), default=0) + 1 if child_levels else 1
 
-        inner_w = CONTAINER_PAD * 2 + max_siblings * NODE_W + (max_siblings - 1) * (INNER_COL_GAP - NODE_W)
+        inner_w = (CONTAINER_PAD * 2
+                   + max_siblings * NODE_W
+                   + (max_siblings - 1) * INNER_COL_GAP)
         inner_w = max(inner_w, NODE_W + CONTAINER_PAD * 2)
         inner_h = (CONTAINER_HDR + CONTAINER_PAD
-                   + num_levels * NODE_H + (num_levels - 1) * INNER_ROW_GAP
+                   + num_levels * NODE_H
+                   + (num_levels - 1) * INNER_ROW_GAP
                    + CONTAINER_PAD)
         container_size[container_id] = {"w": inner_w, "h": inner_h}
 
-        # Relative positions of children inside the container
+        # Relative positions of children inside the container (centred)
         for lvl, cids in sorted(by_lvl.items()):
-            count     = len(cids)
-            span      = count * NODE_W + (count - 1) * (INNER_COL_GAP - NODE_W)
-            start_x   = CONTAINER_PAD + (inner_w - CONTAINER_PAD * 2 - span) / 2
-            rel_y     = CONTAINER_HDR + CONTAINER_PAD + lvl * (NODE_H + INNER_ROW_GAP)
+            count   = len(cids)
+            span    = count * NODE_W + (count - 1) * INNER_COL_GAP
+            start_x = CONTAINER_PAD + (inner_w - CONTAINER_PAD * 2 - span) / 2
+            rel_y   = CONTAINER_HDR + CONTAINER_PAD + lvl * (NODE_H + INNER_ROW_GAP)
             for i, cid in enumerate(cids):
-                inner_rel[cid] = {"x": start_x + i * INNER_COL_GAP, "y": rel_y}
+                inner_rel[cid] = {"x": start_x + i * (NODE_W + INNER_COL_GAP), "y": rel_y}
 
     # ── Step 2: top-level topo sort ──────────────────────────────────────────
     top_levels = _topo(top_ids, precedence_map)
@@ -123,30 +133,34 @@ def build_cf_graph_data(pkg: Package) -> dict:
     for tid, lvl in top_levels.items():
         by_top_lvl[lvl].append(tid)
 
+    # Sort top-level siblings by original task order
+    for ids in by_top_lvl.values():
+        ids.sort(key=lambda tid: task_order.get(tid, 999))
+
     def _node_w(tid: str) -> float:
-        return container_size[tid]["w"] if tid in container_size else float(NODE_W)
+        return float(container_size[tid]["w"]) if tid in container_size else float(NODE_W)
 
     def _node_h(tid: str) -> float:
-        return container_size[tid]["h"] if tid in container_size else float(NODE_H)
+        return float(container_size[tid]["h"]) if tid in container_size else float(NODE_H)
 
-    # ── Step 3: compute canvas width ─────────────────────────────────────────
+    # ── Step 3: canvas width driven by the widest level ──────────────────────
     max_level_w = max(
-        (sum(_node_w(tid) for tid in tids) + (len(tids) - 1) * 40
+        (sum(_node_w(tid) for tid in tids) + (len(tids) - 1) * BRANCH_GAP
          for tids in by_top_lvl.values()),
         default=float(NODE_W),
     )
     canvas_w = max(max_level_w + MARGIN * 2, NODE_W + MARGIN * 2)
 
-    # ── Step 4: assign absolute positions to top-level tasks ─────────────────
+    # ── Step 4: assign absolute positions to top-level tasks (centred) ───────
     positions: dict[str, dict] = {}
     current_y = float(MARGIN)
     for lvl in sorted(by_top_lvl.keys()):
         tids  = by_top_lvl[lvl]
-        total = sum(_node_w(tid) for tid in tids) + (len(tids) - 1) * 40
+        total = sum(_node_w(tid) for tid in tids) + (len(tids) - 1) * BRANCH_GAP
         cur_x = (canvas_w - total) / 2
         for tid in tids:
             positions[tid] = {"x": cur_x, "y": current_y}
-            cur_x += _node_w(tid) + 40
+            cur_x += _node_w(tid) + BRANCH_GAP
         max_h     = max(_node_h(tid) for tid in tids)
         current_y += max_h + ROW_GAP
 
@@ -215,146 +229,129 @@ def build_cf_graph_data(pkg: Package) -> dict:
     }
 
 
-_HTML_TEMPLATE = r"""<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8"/>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: #0d1117; overflow: auto;
-         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
-  svg  { display: block; }
-  .nh  { font-size: 9px; font-weight: 700; letter-spacing: .08em;
-         text-transform: uppercase; fill: #ffffffcc; }
-  .nn  { font-size: 11px; font-weight: 500; fill: #c9d1d9; }
-  .nt  { font-size: 9px; fill: #8b949e; }
-  .ch  { font-size: 9px; font-weight: 700; letter-spacing: .06em;
-         text-transform: uppercase; fill: #7ee787cc; }
-  .cn  { font-size: 9px; fill: #56d36499; }
-</style>
-</head>
-<body>
-<svg id="cv" xmlns="http://www.w3.org/2000/svg">
-<defs>
-  <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-    <path d="M0,0 L0,6 L8,3 z" fill="#444c56"/>
-  </marker>
-</defs>
-<script>
-const G = __GRAPH_JSON__;
-window.onload = () => {
-  const svg = document.getElementById('cv');
-  svg.setAttribute('width',   G.width);
-  svg.setAttribute('height',  G.height);
-  svg.setAttribute('viewBox', `0 0 ${G.width} ${G.height}`);
+# ── Pure-Python SVG rendering ─────────────────────────────────────────────────
 
-  // id -> bbox (containers have full w/h; nodes have NODE_W/NODE_H)
-  const byId = {};
-  G.nodes.forEach(n => byId[n.id] = n);
-  G.containers.forEach(c => byId[c.id] = c);
+def _xe(s: object) -> str:
+    return (str(s)
+            .replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;")
+            .replace('"', "&quot;"))
 
-  // 1. Container boxes (behind everything)
-  const cg = se('g');
-  G.containers.forEach(c => {
-    // background
-    const bg = se('rect');
-    attr(bg, {x:c.x, y:c.y, width:c.w, height:c.h, rx:6,
-              fill:'#0d2b1a', stroke:'#238636', 'stroke-width':'1.5'});
-    cg.appendChild(bg);
-    // header band
-    const hdr = se('rect');
-    attr(hdr, {x:c.x, y:c.y, width:c.w, height:30, rx:6, fill:'#1a6334'});
-    cg.appendChild(hdr);
-    // fix bottom corners of header
-    const fix = se('rect');
-    attr(fix, {x:c.x, y:c.y+15, width:c.w, height:15, fill:'#1a6334'});
-    cg.appendChild(fix);
-    // type label
-    const tl = se('text');
-    attr(tl, {x:c.x+c.w/2, y:c.y+11, 'text-anchor':'middle', class:'ch'});
-    tl.textContent = c.typeLabel.toUpperCase();
-    cg.appendChild(tl);
-    // container name
-    const nl = se('text');
-    attr(nl, {x:c.x+c.w/2, y:c.y+23, 'text-anchor':'middle', class:'cn'});
-    nl.textContent = trunc(c.name, 36);
-    cg.appendChild(nl);
-  });
-  svg.appendChild(cg);
 
-  // 2. Edges
-  const eg = se('g');
-  G.edges.forEach(e => {
-    const s = byId[e.from], t = byId[e.to];
-    if (!s || !t) return;
-    const x1 = s.x + s.w/2, y1 = s.y + s.h;
-    const x2 = t.x + t.w/2, y2 = t.y;
-    const mid = (y2-y1)*0.45;
-    const p = se('path');
-    attr(p, {
-      d: `M${x1},${y1} C${x1},${y1+mid} ${x2},${y2-mid} ${x2},${y2}`,
-      stroke:'#444c56', 'stroke-width':'1.5', fill:'none',
-      'marker-end':'url(#arr)'
-    });
-    eg.appendChild(p);
-  });
-  svg.appendChild(eg);
+def _trunc(s: str, n: int) -> str:
+    if not s:
+        return ""
+    return s[:n - 1] + "…" if len(s) > n else s
 
-  // 3. Task nodes
-  const ng = se('g');
-  G.nodes.forEach(n => {
-    const g = se('g');
-    g.setAttribute('transform', `translate(${n.x},${n.y})`);
-    const box = se('rect');
-    attr(box, {width:n.w, height:n.h, rx:4,
-               fill:'#161b22', stroke:'#30363d', 'stroke-width':'1'});
-    g.appendChild(box);
-    // header band
-    const hdr = se('rect');
-    attr(hdr, {width:n.w, height:18, rx:4, fill:n.headerColor});
-    g.appendChild(hdr);
-    const fix = se('rect');
-    attr(fix, {y:9, width:n.w, height:9, fill:n.headerColor});
-    g.appendChild(fix);
-    // type in header
-    const ht = se('text');
-    attr(ht, {x:n.w/2, y:12, 'text-anchor':'middle', class:'nh'});
-    ht.textContent = n.typeLabel.toUpperCase();
-    g.appendChild(ht);
-    // task name (up to two lines)
-    const line1 = trunc(n.name, 26);
-    const nt = se('text');
-    attr(nt, {x:n.w/2, y:34, 'text-anchor':'middle', class:'nn'});
-    nt.textContent = line1;
-    g.appendChild(nt);
-    if (n.name.length > 26) {
-      const nt2 = se('text');
-      attr(nt2, {x:n.w/2, y:48, 'text-anchor':'middle', class:'nt'});
-      nt2.textContent = trunc(n.name.slice(26), 26);
-      g.appendChild(nt2);
-    }
-    ng.appendChild(g);
-  });
-  svg.appendChild(ng);
-};
 
-function se(tag) {
-  return document.createElementNS('http://www.w3.org/2000/svg', tag);
-}
-function attr(el, map) {
-  Object.entries(map).forEach(([k, v]) => el.setAttribute(k, v));
-}
-function trunc(s, n) {
-  return s && s.length > n ? s.slice(0, n-1)+'…' : (s||'');
-}
-</script>
-</svg>
-</body>
-</html>
-"""
+def render_cf_svg(pkg: Package) -> str:
+    """Return a self-contained SVG string for the control flow diagram."""
+    data = build_cf_graph_data(pkg)
+    W = int(data["width"])
+    H = int(data["height"])
+    HEADER_H = 18
+
+    p: list[str] = []
+    p.append(f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}">')
+    p.append(f'<rect width="{W}" height="{H}" fill="#0d1117"/>')
+    p.append(
+        '<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">'
+        '<path d="M0,0 L0,6 L8,3 z" fill="#444c56"/></marker></defs>'
+    )
+
+    by_id: dict = {}
+    for n in data["nodes"]:
+        by_id[n["id"]] = n
+    for c in data["containers"]:
+        by_id[c["id"]] = c
+
+    # 1. Container boxes (behind everything)
+    for c in data["containers"]:
+        x, y, cw, ch = c["x"], c["y"], c["w"], c["h"]
+        p.append(
+            f'<rect x="{x:.1f}" y="{y:.1f}" width="{cw:.1f}" height="{ch:.1f}" rx="6" '
+            f'fill="#0d2b1a" stroke="#238636" stroke-width="1.5"/>'
+        )
+        p.append(
+            f'<rect x="{x:.1f}" y="{y:.1f}" width="{cw:.1f}" height="30" rx="6" fill="#1a6334"/>'
+        )
+        p.append(
+            f'<rect x="{x:.1f}" y="{y + 15:.1f}" width="{cw:.1f}" height="15" fill="#1a6334"/>'
+        )
+        cx = x + cw / 2
+        p.append(
+            f'<text x="{cx:.1f}" y="{y + 11:.1f}" text-anchor="middle" '
+            f'font-size="9" font-weight="700" fill="#7ee787cc" '
+            f'font-family="Arial,sans-serif" letter-spacing="0.6">'
+            f'{_xe(c["typeLabel"].upper())}</text>'
+        )
+        p.append(
+            f'<text x="{cx:.1f}" y="{y + 23:.1f}" text-anchor="middle" '
+            f'font-size="9" fill="#56d36499" font-family="Arial,sans-serif">'
+            f'{_xe(_trunc(c["name"], 36))}</text>'
+        )
+
+    # 2. Edges
+    for e in data["edges"]:
+        s = by_id.get(e["from"])
+        t = by_id.get(e["to"])
+        if not s or not t:
+            continue
+        x1 = s["x"] + s["w"] / 2
+        y1 = s["y"] + s["h"]
+        x2 = t["x"] + t["w"] / 2
+        y2 = t["y"]
+        dy = (y2 - y1) * 0.45
+        p.append(
+            f'<path d="M{x1:.1f},{y1:.1f} C{x1:.1f},{y1+dy:.1f} '
+            f'{x2:.1f},{y2-dy:.1f} {x2:.1f},{y2:.1f}" '
+            f'stroke="#444c56" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>'
+        )
+
+    # 3. Task nodes
+    for n in data["nodes"]:
+        x, y, nw, nh = n["x"], n["y"], n["w"], n["h"]
+        cx = x + nw / 2
+        p.append(
+            f'<rect x="{x:.1f}" y="{y:.1f}" width="{nw}" height="{nh}" rx="4" '
+            f'fill="#161b22" stroke="#30363d" stroke-width="1"/>'
+        )
+        p.append(
+            f'<rect x="{x:.1f}" y="{y:.1f}" width="{nw}" height="{HEADER_H}" '
+            f'rx="4" fill="{n["headerColor"]}"/>'
+        )
+        p.append(
+            f'<rect x="{x:.1f}" y="{y + HEADER_H / 2:.1f}" width="{nw}" '
+            f'height="{HEADER_H / 2:.1f}" fill="{n["headerColor"]}"/>'
+        )
+        p.append(
+            f'<text x="{cx:.1f}" y="{y + 12:.1f}" text-anchor="middle" '
+            f'font-size="9" font-weight="700" fill="#ffffffcc" font-family="Arial,sans-serif">'
+            f'{_xe(n["typeLabel"].upper())}</text>'
+        )
+        line1 = _xe(_trunc(n["name"], 26))
+        p.append(
+            f'<text x="{cx:.1f}" y="{y + 34:.1f}" text-anchor="middle" '
+            f'font-size="11" fill="#c9d1d9" font-family="Arial,sans-serif">{line1}</text>'
+        )
+        if len(n["name"]) > 26:
+            line2 = _xe(_trunc(n["name"][26:], 26))
+            p.append(
+                f'<text x="{cx:.1f}" y="{y + 48:.1f}" text-anchor="middle" '
+                f'font-size="9" fill="#8b949e" font-family="Arial,sans-serif">{line2}</text>'
+            )
+
+    p.append('</svg>')
+    return '\n'.join(p)
 
 
 def render_cf_html(pkg: Package) -> str:
-    """Return self-contained HTML string for the control flow diagram."""
-    data = build_cf_graph_data(pkg)
-    return _HTML_TEMPLATE.replace("__GRAPH_JSON__", json.dumps(data))
+    """Return self-contained HTML for embedding in Streamlit."""
+    svg = render_cf_svg(pkg)
+    return (
+        '<!DOCTYPE html><html><head><meta charset="utf-8"/>'
+        '<style>*{box-sizing:border-box;margin:0;padding:0}'
+        'body{background:#0d1117;overflow:auto}</style></head>'
+        f'<body>{svg}</body></html>'
+    )

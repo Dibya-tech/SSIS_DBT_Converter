@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import csv
 import io
+import re
 from pathlib import Path
 
 from ..engine import ConversionRun
@@ -11,7 +12,12 @@ from ..ir.model import sanitize_identifier
 _MATERIALIZATION = {"staging": "view", "intermediate": "view", "marts": "table"}
 
 
-def build_project_files(run: ConversionRun) -> dict[str, str]:
+def _safe_filename(name: str) -> str:
+    """Sanitise a flow name to a safe filename stem."""
+    return re.sub(r"[^\w\-]", "_", name).strip("_") or "flow"
+
+
+def build_project_files(run: ConversionRun) -> dict[str, str | bytes]:
     """Return {relative_path: file_contents} for the whole dbt project."""
     pkg_name = sanitize_identifier(run.package.name) or "migrated_package"
     files: dict[str, str] = {}
@@ -33,6 +39,34 @@ def build_project_files(run: ConversionRun) -> dict[str, str]:
     files["README.md"] = _readme(pkg_name, run)
     for keep in ("macros", "seeds", "tests"):
         files[f"{keep}/.gitkeep"] = ""
+
+    # Flow chart PNGs in flowcharts/
+    try:
+        from .charts import svg_to_png_bytes
+        from ..ui.cf_diagram import render_cf_svg
+        from ..ui.flow_diagram import render_svg as render_df_svg
+
+        cf_png = svg_to_png_bytes(render_cf_svg(run.package))
+        if cf_png is not None:
+            files["flowcharts/control_flow.png"] = cf_png
+
+        # Build a map from data_flow_id -> (df, results) for the models
+        df_map = {df.id: df for df in run.package.data_flows}
+        results_map: dict[str, list] = {}
+        for m in run.models:
+            if m.data_flow_id:
+                results_map[m.data_flow_id] = m.results
+
+        for df in run.package.data_flows:
+            res = results_map.get(df.id, [])
+            df_svg = render_df_svg(df, res)
+            png = svg_to_png_bytes(df_svg)
+            if png is not None:
+                fname = _safe_filename(df.name)
+                files[f"flowcharts/{fname}.png"] = png
+    except Exception:
+        pass  # chart export is best-effort; never fail the zip
+
     return files
 
 
@@ -41,7 +75,10 @@ def write_project(run: ConversionRun, out_dir: str | Path) -> Path:
     for rel, content in build_project_files(run).items():
         dest = root / rel
         dest.parent.mkdir(parents=True, exist_ok=True)
-        dest.write_text(content, encoding="utf-8")
+        if isinstance(content, bytes):
+            dest.write_bytes(content)
+        else:
+            dest.write_text(content, encoding="utf-8")
     return root
 
 
