@@ -168,7 +168,7 @@ def _read_sql_task(ex, task: Task) -> None:
             break
 
 
-def _walk_executables(container, pkg: Package) -> None:
+def _walk_executables(container, pkg: Package, parent_id: str | None = None) -> None:
     """Recursively walk a DTS:Executables element, discovering DataFlow tasks at
     any nesting depth (e.g. inside ForEachLoop / Sequence containers)."""
     for ex in container.findall(_q("Executable")):
@@ -178,6 +178,7 @@ def _walk_executables(container, pkg: Package) -> None:
             id=_attr(ex, "DTSID", _attr(ex, "refId", "")),
             task_type=task_type,
             name=_attr(ex, "ObjectName", "") or "",
+            parent_id=parent_id,
         )
         pkg.tasks.append(task)
         if task_type == "DataFlowTask":
@@ -189,7 +190,7 @@ def _walk_executables(container, pkg: Package) -> None:
         # Recurse into any nested Executables block (ForEach/Sequence/etc.)
         nested = ex.find(_q("Executables"))
         if nested is not None:
-            _walk_executables(nested, pkg)
+            _walk_executables(nested, pkg, parent_id=task.id)
     _parse_precedence(container, pkg)
 
 

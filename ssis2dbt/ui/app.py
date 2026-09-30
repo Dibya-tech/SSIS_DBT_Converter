@@ -26,6 +26,7 @@ from ssis2dbt.engine import ConversionRun, convert_package
 from ssis2dbt.export.project import build_project_files
 from ssis2dbt.ir.model import Grade
 from ssis2dbt.parser import dtsx
+from ssis2dbt.ui.cf_diagram import build_cf_graph_data, render_cf_html
 from ssis2dbt.ui.flow_diagram import render_html
 
 # ---------------------------------------------------------------------------
@@ -142,6 +143,15 @@ result_by_df: dict[str, list] = {
 with left_col:
     st.markdown("#### SSIS package")
     st.caption(f"📄 {uploaded.name}  ·  dialect: **{dialect}**")
+
+    # Control flow diagram (task execution order + containers)
+    with st.expander("🔄 Control Flow", expanded=True):
+        cf_gd  = build_cf_graph_data(pkg)
+        cf_h   = min(max(int(cf_gd["height"]) + 40, 180), 800)
+        components.html(render_cf_html(pkg), height=cf_h, scrolling=True)
+
+    st.markdown("<hr style='border-color:#21262d;margin:8px 0'/>",
+                unsafe_allow_html=True)
 
     # One flow-diagram tab per data flow
     df_list = pkg.data_flows

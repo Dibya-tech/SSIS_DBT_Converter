@@ -84,6 +84,7 @@ class Task:
     name: str
     properties: dict = field(default_factory=dict)
     precedence: list[str] = field(default_factory=list)  # upstream task ids
+    parent_id: Optional[str] = None  # set when task lives inside a container
 
 
 @dataclass
