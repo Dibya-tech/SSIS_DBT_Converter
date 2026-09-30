@@ -22,16 +22,27 @@ class ExprResult:
 
 # SSIS cast tokens -> SQL types
 _DT_CAST = {
-    "DT_WSTR": "varchar",
-    "DT_STR": "varchar",
-    "DT_I4": "int",
-    "DT_I8": "bigint",
-    "DT_R8": "float",
-    "DT_NUMERIC": "numeric",
-    "DT_BOOL": "boolean",
-    "DT_DBDATE": "date",
+    "DT_WSTR":        "varchar",
+    "DT_STR":         "varchar",
+    "DT_I1":          "tinyint",
+    "DT_I2":          "smallint",
+    "DT_I4":          "int",
+    "DT_I8":          "bigint",
+    "DT_UI1":         "tinyint",
+    "DT_UI2":         "smallint",
+    "DT_UI4":         "int",
+    "DT_UI8":         "bigint",
+    "DT_R4":          "float",
+    "DT_R8":          "float",
+    "DT_NUMERIC":     "numeric",
+    "DT_DECIMAL":     "decimal",
+    "DT_BOOL":        "boolean",
+    "DT_DBDATE":      "date",
     "DT_DBTIMESTAMP": "timestamp",
-    "DT_GUID": "varchar",
+    "DT_DBTIMESTAMPOFFSET": "timestamp_tz",
+    "DT_GUID":        "varchar(36)",
+    "DT_BYTES":       "binary",
+    "DT_IMAGE":       "binary",
 }
 
 
@@ -43,18 +54,28 @@ def translate(expr: str, dialect: Dialect) -> ExprResult:
     confident = True
     notes = []
 
-    # (DT_WSTR,50)[Col]  ->  cast(col as varchar(50))
+    # SSIS cast syntax comes in two forms:
+    #   (a) (DT_WSTR,50)[Col]          -- column/word operand
+    #   (b) (DT_DBTIMESTAMP)(@[Var])   -- parenthesised sub-expression operand
+    #
+    # We handle (b) by first translating the inner sub-expression, then wrapping.
+    # Run in a loop so nested casts are fully resolved.
     def _cast_repl(m):
-        dt = m.group("dt").upper()
+        dt   = m.group("dt").upper()
         size = m.group("size")
-        operand = m.group("operand")
+        raw_operand = m.group("operand") or m.group("paren_operand") or ""
+        # Recursively translate inner expression (handles @[Var], ternary, etc.)
+        inner = translate(raw_operand.strip("()"), dialect)
         sqltype = _DT_CAST.get(dt, "varchar")
         if size and sqltype in ("varchar", "numeric"):
             sqltype = f"{sqltype}({size})"
-        return dialect.cast(_col(operand), sqltype)
+        translated = inner.sql if inner.sql else _col(raw_operand)
+        return dialect.cast(translated, sqltype)
 
+    # Pattern covers both (a) column/word and (b) (parenthesised sub-expression)
     s = re.sub(
-        r"\(\s*(?P<dt>DT_[A-Z0-9_]+)\s*(?:,\s*(?P<size>\d+)\s*)?\)\s*(?P<operand>\[[^\]]+\]|\w+)",
+        r"\(\s*(?P<dt>DT_[A-Z0-9_]+)\s*(?:,\s*(?P<size>\d+)\s*)?\)"
+        r"\s*(?:(?P<paren_operand>\([^)]*\))|(?P<operand>\[[^\]]+\]|\w+))",
         _cast_repl, s,
     )
 

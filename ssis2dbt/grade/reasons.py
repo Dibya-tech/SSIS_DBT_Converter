@@ -42,8 +42,11 @@ CATALOG: dict[str, Reason] = {
         "EXTERNAL_SOURCE", "Flat file / Excel source",
         "Configure as a dbt seed or external table", Grade.WARNING),
     "SCD": Reason(
-        "SCD", "Slowly Changing Dimension",
-        "Model as a dbt snapshot or incremental pattern", Grade.WARNING),
+        "SCD", "Slowly Changing Dimension (Type 1/2 wizard)",
+        "Replace entire SCD sub-graph with a dbt snapshot "
+        "(snapshots/<name>.sql, strategy=timestamp, unique_key=<business_key>). "
+        "Delete all downstream OLE DB Command CTEs — they issue row-by-row UPDATEs "
+        "with no set-based equivalent.", Grade.MANUAL),
     "PIVOT": Reason(
         "PIVOT", "Pivot/Unpivot",
         "Use dialect-specific PIVOT/UNPIVOT; verify output", Grade.WARNING),

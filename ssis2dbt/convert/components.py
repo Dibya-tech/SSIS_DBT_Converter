@@ -394,9 +394,52 @@ def _pivot(comp: Component, ctx: Ctx) -> CTEResult:
 
 @converter("SlowlyChangingDimension")
 def _scd(comp: Component, ctx: Ctx) -> CTEResult:
-    desc = _cte_desc(comp, ["⚠️  Model as a dbt snapshot or incremental merge strategy"])
-    return CTEResult(body=f"{desc}\n    select * from {_first_up(ctx)}",
-                     grade=Grade.WARNING, reason_code="SCD")
+    """SCD is graded Manual.
+
+    The SSIS SCD wizard encodes its entire branching logic (business keys,
+    Type-1/Type-2 attributes, OLE DB Commands for UPDATE) in a deeply-nested
+    `SCDMetadata` XML blob inside `<PipelineComponentMetadata>`.  The downstream
+    OLE DB Command components execute row-by-row UPDATE statements that have no
+    set-based SQL equivalent.
+
+    Correct migration path: replace the whole SCD data-flow sub-graph with a
+    dbt snapshot (https://docs.getdbt.com/docs/build/snapshots).
+    """
+    # Try to surface whatever hints we can from SCDMetadata / component properties
+    bk  = comp.properties.get("BusinessKey", "")
+    t1  = comp.properties.get("ChangingAttributeDefaults", "")
+    t2  = comp.properties.get("HistoricalAttributeDefaults", "")
+    hints = [
+        "⛔  The SSIS SCD wizard produces row-by-row UPDATEs via OLE DB Commands.",
+        "    There is no equivalent set-based SQL pattern — use a dbt snapshot.",
+        "",
+        "    Migration steps:",
+        "    1. Create a dbt snapshot in snapshots/<name>.sql",
+        "    2. Set strategy: timestamp (or check) based on your updated_at column",
+        "    3. Configure unique_key = '<business key>'",
+        "    4. Delete this CTE and all downstream OLE DB Command CTEs",
+    ]
+    if bk:
+        hints.append(f"    Business key detected   : {bk}")
+    if t1:
+        hints.append(f"    Type-1 (overwrite) cols : {t1}")
+    if t2:
+        hints.append(f"    Type-2 (versioned) cols : {t2}")
+
+    desc = _cte_desc(comp, hints)
+    body = (
+        f"{desc}\n"
+        f"    -- TODO: replace with a dbt snapshot\n"
+        f"    -- Example:\n"
+        f"    --   {{% snapshot {comp.safe_name} %}}\n"
+        f"    --   {{{{ config(target_schema='snapshots', unique_key='{bk or 'id'}',\n"
+        f"    --            strategy='timestamp', updated_at='updated_at') }}}}\n"
+        f"    --   select * from {{{{ source('raw', '{comp.safe_name}') }}}}\n"
+        f"    --   {{% endsnapshot %}}\n"
+        f"    select * from {_first_up(ctx)}"
+    )
+    return CTEResult(body=body, grade=Grade.MANUAL, reason_code="SCD",
+                     review_comment="Replace entire SCD sub-graph with a dbt snapshot")
 
 
 @converter("OLEDBCommand")
@@ -423,17 +466,36 @@ def _script(comp: Component, ctx: Ctx) -> CTEResult:
 # ---------------------------------------------------------------------------
 
 def _derived_expressions(comp: Component) -> list[tuple[str, str]]:
-    out = []
+    """Return (output_col_name, ssis_expression) pairs for a Derived Column.
+
+    SSIS stores expressions in TWO places depending on how the package was built:
+      a) Component-level properties:  "Expression_ColName" -> value  (older packages)
+      b) Per-outputColumn nested props:  col.props["Expression"] or
+         col.props["FriendlyExpression"]
+         -- this is the ground truth written by the SSIS designer.
+
+    Strategy: collect (a) first, then let (b) overwrite for the same column name,
+    so the deeply-nested per-column value always wins.
+    """
+    seen: dict[str, str] = {}
+
+    # (a) component-level expression properties (simple packages / hand-edited XML)
     for key, val in comp.properties.items():
         if key.lower().startswith("expression") and val:
-            col = key.split("_", 1)[1] if "_" in key else key
-            out.append((col, val))
+            col_name = key.split("_", 1)[1] if "_" in key else key
+            seen[col_name] = val
+
+    # (b) per-outputColumn nested Expression / FriendlyExpression
+    #     These live at: outputs/output/outputColumns/outputColumn/properties/property
+    #     and are captured into col.props by _read_output_columns in the parser.
+    #     FriendlyExpression is the human-readable form; Expression is the raw AST —
+    #     prefer FriendlyExpression as it translates more cleanly.
     for col in comp.columns:
-        if isinstance(comp.properties.get(col.name), str):
-            expr = comp.properties[col.name]
-            if expr:
-                out.append((col.name, expr))
-    return out
+        expr = col.props.get("FriendlyExpression") or col.props.get("Expression")
+        if expr:
+            seen[col.name] = expr   # (b) always wins over (a)
+
+    return list(seen.items())
 
 
 def _extract_col_from_lineage(lineage_val: str) -> Optional[str]:
