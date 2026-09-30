@@ -153,6 +153,21 @@ def _parse_executables(root, pkg: Package) -> None:
     _walk_executables(container, pkg)
 
 
+_SQLTASK_NS = "www.microsoft.com/sqlserver/dts/tasks/sqltask"
+
+
+def _read_sql_task(ex, task: Task) -> None:
+    """Extract SqlStatementSource from an ExecuteSQLTask ObjectData element."""
+    obj = ex.find(_q("ObjectData"))
+    if obj is None:
+        return
+    for child in obj.iter():
+        sql = child.get(f"{{{_SQLTASK_NS}}}SqlStatementSource")
+        if sql:
+            task.properties["SqlStatementSource"] = sql.strip()
+            break
+
+
 def _walk_executables(container, pkg: Package) -> None:
     """Recursively walk a DTS:Executables element, discovering DataFlow tasks at
     any nesting depth (e.g. inside ForEachLoop / Sequence containers)."""
@@ -169,6 +184,8 @@ def _walk_executables(container, pkg: Package) -> None:
             df = _parse_pipeline(ex, task)
             if df is not None:
                 pkg.data_flows.append(df)
+        elif task_type == "ExecuteSQLTask":
+            _read_sql_task(ex, task)
         # Recurse into any nested Executables block (ForEach/Sequence/etc.)
         nested = ex.find(_q("Executables"))
         if nested is not None:
@@ -225,6 +242,16 @@ def _parse_pipeline(executable, task: Task) -> DataFlow | None:
                 columns=_read_output_columns(comp),
                 input_columns=_read_input_columns(comp),
             )
+            # ConditionalSplit: capture per-output filter expressions
+            if ctype == "ConditionalSplit":
+                for out in comp.findall("outputs/output"):
+                    is_default = out.get("isDefaultOut", "false").lower() == "true"
+                    oname = out.get("name", "")
+                    if not is_default and oname:
+                        for prop in out.findall("properties/property"):
+                            if prop.get("name") == "FriendlyExpression":
+                                component.output_conditions[oname] = (prop.text or "").strip()
+
             df.components.append(component)
             ref_to_id[cid] = cid
             for outs in comp.findall("outputs/output"):
@@ -286,11 +313,15 @@ def _read_output_columns(comp) -> list[Column]:
                 pname = prop.get("name")
                 if pname:
                     col_props[pname] = (prop.text or "").strip()
+            prec_raw = col.get("precision")
+            scale_raw = col.get("scale")
             cols.append(Column(
                 name=cname,
                 data_type=col.get("dataType"),
                 lineage_id=col.get("lineageId"),
                 length=int(length_raw) if length_raw else None,
+                precision=int(prec_raw) if prec_raw else None,
+                scale=int(scale_raw) if scale_raw else None,
                 props=col_props,
             ))
     return cols

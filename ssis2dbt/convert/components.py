@@ -53,7 +53,11 @@ _SSIS_TO_SQL: dict[str, str] = {
 
 def _sql_type(col: Column) -> str:
     base = _SSIS_TO_SQL.get(col.data_type or "", "varchar")
-    if col.length and base in ("varchar", "nvarchar", "numeric", "decimal"):
+    if col.precision and base in ("numeric", "decimal"):
+        if col.scale:
+            return f"{base}({col.precision},{col.scale})"
+        return f"{base}({col.precision})"
+    if col.length and base in ("varchar", "nvarchar"):
         return f"{base}({col.length})"
     return base
 
@@ -120,6 +124,7 @@ class CTEResult:
     reason_code: Optional[str] = None
     notes: list[str] = field(default_factory=list)
     review_comment: Optional[str] = None
+    extra_ctes: list = field(default_factory=list)  # list[tuple[str,str]]: (cte_name, body)
 
 
 @dataclass
@@ -324,11 +329,40 @@ def _aggregate(comp: Component, ctx: Ctx) -> CTEResult:
 
 @converter("ConditionalSplit")
 def _conditional_split(comp: Component, ctx: Ctx) -> CTEResult:
-    desc = _cte_desc(comp, [
-        "Branches are represented as separate downstream CTEs filtering this CTE.",
-        "Add WHERE clauses in the downstream CTEs for each split condition.",
-    ])
-    return CTEResult(body=f"{desc}\n    select * from {_first_up(ctx)}")
+    branch_names = [sanitize_identifier(n) for n in comp.output_conditions]
+    desc_lines = ["Base passthrough — filter via the branch CTEs below:"]
+    desc_lines += [f"  {comp.safe_name}_{n}  (WHERE translated condition)" for n in branch_names]
+    if comp.output_conditions:
+        desc_lines.append(f"  {comp.safe_name}_default  (WHERE NOT any condition)")
+    desc = _cte_desc(comp, desc_lines)
+    base_body = f"{desc}\n    select * from {_first_up(ctx)}"
+
+    extra: list[tuple[str, str]] = []
+    translated_conditions: list[str] = []
+
+    for out_name, ssis_expr in comp.output_conditions.items():
+        branch_name = f"{comp.safe_name}_{sanitize_identifier(out_name)}"
+        res = translate_expr(ssis_expr, ctx.dialect)
+        where_sql = res.sql if res.sql else f"/* TODO: translate: {ssis_expr} */"
+        translated_conditions.append(where_sql)
+        branch_body = (
+            f"    -- Branch: {out_name}  -- SSIS: {ssis_expr}\n"
+            f"    select * from {comp.safe_name}\n"
+            f"    where {where_sql}"
+        )
+        extra.append((branch_name, branch_body))
+
+    # Default branch: rows not captured by any named condition
+    if translated_conditions:
+        inv = " or ".join(f"not ({c})" for c in translated_conditions)
+        default_body = (
+            f"    -- Branch: Default Output (rows not matched by any condition)\n"
+            f"    select * from {comp.safe_name}\n"
+            f"    where {inv}"
+        )
+        extra.append((f"{comp.safe_name}_default", default_body))
+
+    return CTEResult(body=base_body, extra_ctes=extra)
 
 
 @converter("Multicast")

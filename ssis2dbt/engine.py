@@ -105,7 +105,11 @@ def convert_package(pkg: Package, dialect: str = "snowflake") -> ConversionRun:
                             f"Parsed package: {len(pkg.data_flows)} data flow(s), "
                             f"{len(pkg.tasks)} task(s)"))
 
+    # Build control-flow warning blocks from ExecuteSQL tasks in the package
+    cf_warnings = _build_cf_warnings(pkg)
+
     for df in pkg.data_flows:
+        df.cf_warnings = cf_warnings
         layer = route_layer(df)
         model = generate_model(df, dialect=dialect, package_name=pkg.name, layer=layer)
         run.models.append(model)
@@ -126,6 +130,35 @@ def convert_package(pkg: Package, dialect: str = "snowflake") -> ConversionRun:
                                 f"Control-flow task requires external orchestration: "
                                 f"{reason.remediation if reason else code}"))
     return run
+
+
+def _build_cf_warnings(pkg: Package) -> list[str]:
+    """Build /* CONVERSION WARNING */ comment blocks for each ExecuteSQL task
+    that carries a SqlStatementSource. Attached to every DataFlow in the package
+    so engineers see the full control-flow context inline."""
+    warnings = []
+    for task in pkg.tasks:
+        if task.task_type != "ExecuteSQLTask":
+            continue
+        sql = task.properties.get("SqlStatementSource", "").strip()
+        if not sql:
+            continue
+        lines = sql.splitlines()
+        preview_lines = lines[:25]
+        truncated = len(lines) > 25
+        preview = "\n".join(f"  {ln}" for ln in preview_lines)
+        if truncated:
+            preview += f"\n  ... ({len(lines) - 25} more lines)"
+        warnings.append(
+            f"/*\n"
+            f"  [CONVERSION WARNING]: Control Flow Task '{task.name}' (ExecuteSQLTask)\n"
+            f"  This SQL ran as part of the SSIS control flow. Migrate it manually:\n\n"
+            f"{preview}\n\n"
+            f"  TODO: DDL -> let dbt manage schema; truncations -> pre_hook config;\n"
+            f"  SCD UPDATE/INSERT -> replace with a dbt snapshot.\n"
+            f"*/"
+        )
+    return warnings
 
 
 def convert_file(path: str | Path, dialect: str = "snowflake") -> ConversionRun:

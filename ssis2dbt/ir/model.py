@@ -29,6 +29,8 @@ class Column:
     data_type: Optional[str] = None
     lineage_id: Optional[str] = None
     length: Optional[int] = None
+    precision: Optional[int] = None  # for numeric/decimal types
+    scale: Optional[int] = None      # for numeric/decimal types
     props: dict = field(default_factory=dict)   # per-column SSIS properties
 
 
@@ -45,6 +47,7 @@ class Component:
     input_columns: list[Column] = field(default_factory=list) # input columns
     properties: dict = field(default_factory=dict)
     description: str = ""   # SSIS component description attribute
+    output_conditions: dict = field(default_factory=dict)  # ConditionalSplit: output_name -> ssis_expr
 
     @property
     def safe_name(self) -> str:
@@ -66,6 +69,7 @@ class DataFlow:
     name: str
     components: list[Component] = field(default_factory=list)
     paths: list[Path] = field(default_factory=list)
+    cf_warnings: list[str] = field(default_factory=list)  # control-flow warning blocks
 
     def component(self, cid: str) -> Optional[Component]:
         return next((c for c in self.components if c.id == cid), None)
