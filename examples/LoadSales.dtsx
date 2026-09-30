@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+    DTS:ObjectName="LoadSales" DTS:VersionBuild="8" DTS:ProtectionLevel="DontSaveSensitive">
+  <DTS:Variables>
+    <DTS:Variable DTS:Namespace="User" DTS:ObjectName="LoadDate">
+      <DTS:VariableValue DTS:DataType="7">2024-01-01</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable DTS:Namespace="Project" DTS:ObjectName="TargetSchema">
+      <DTS:VariableValue DTS:DataType="8">analytics</DTS:VariableValue>
+    </DTS:Variable>
+  </DTS:Variables>
+  <DTS:ConnectionManagers>
+    <DTS:ConnectionManager DTS:ObjectName="ERP_OLEDB" DTS:CreationName="OLEDB" DTS:DTSID="{CM1}">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          ConnectionString="Data Source=erp-sql;Initial Catalog=ERP;User ID=svc;Password=SuperSecret123;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+  </DTS:ConnectionManagers>
+  <DTS:Executables>
+    <DTS:Executable DTS:ExecutableType="SSIS.Pipeline.3" DTS:ObjectName="DFT_Load_Orders"
+        DTS:DTSID="{DFT1}" DTS:refId="Package\DFT_Load_Orders">
+      <DTS:ObjectData>
+        <pipeline>
+          <components>
+            <component refId="src_orders" name="OLE_DB_Source_Orders"
+                componentClassID="Microsoft.OLEDBSource">
+              <properties>
+                <property name="OpenRowset">erp.orders</property>
+              </properties>
+              <outputs>
+                <output refId="src_orders.out" name="Output">
+                  <outputColumns>
+                    <outputColumn name="order_id" dataType="i4" lineageId="l1"/>
+                    <outputColumn name="order_ts" dataType="dbTimeStamp" lineageId="l2"/>
+                    <outputColumn name="customer_id" dataType="i4" lineageId="l3"/>
+                    <outputColumn name="order_status" dataType="wstr" lineageId="l4"/>
+                  </outputColumns>
+                </output>
+              </outputs>
+            </component>
+            <component refId="drv_dates" name="Derived_Column_AddDate"
+                componentClassID="Microsoft.DerivedColumn">
+              <properties>
+                <property name="Expression_order_date">(DT_DBDATE)[order_ts]</property>
+                <property name="Expression_is_open">[order_status] == "OPEN" ? 1 : 0</property>
+              </properties>
+              <inputs><input refId="drv_dates.in" name="Input"/></inputs>
+              <outputs><output refId="drv_dates.out" name="Output"/></outputs>
+            </component>
+            <component refId="lkp_customer" name="Lookup_Customer"
+                componentClassID="Microsoft.Lookup">
+              <properties>
+                <property name="NoMatchBehavior">Redirect rows to no match output</property>
+                <property name="SqlCommand">select customer_id, customer_key from erp.customers</property>
+              </properties>
+              <inputs><input refId="lkp_customer.in" name="Input"/></inputs>
+              <outputs><output refId="lkp_customer.out" name="Match"/></outputs>
+            </component>
+            <component refId="dst_orders" name="OLE_DB_Destination_Orders"
+                componentClassID="Microsoft.OLEDBDestination">
+              <inputs><input refId="dst_orders.in" name="Input"/></inputs>
+              <outputs/>
+            </component>
+          </components>
+          <paths>
+            <path startId="src_orders.out" endId="drv_dates.in"/>
+            <path startId="drv_dates.out" endId="lkp_customer.in"/>
+            <path startId="lkp_customer.out" endId="dst_orders.in"/>
+          </paths>
+        </pipeline>
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable DTS:ExecutableType="Microsoft.SendMailTask" DTS:ObjectName="Notify_Team"
+        DTS:DTSID="{MAIL1}" DTS:refId="Package\Notify_Team"/>
+    <DTS:PrecedenceConstraints>
+      <DTS:PrecedenceConstraint DTS:From="Package\DFT_Load_Orders" DTS:To="Package\Notify_Team"/>
+    </DTS:PrecedenceConstraints>
+  </DTS:Executables>
+</DTS:Executable>

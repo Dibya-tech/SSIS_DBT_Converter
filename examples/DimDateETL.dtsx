@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts" DTS:ObjectName="Dim Date ETL" DTS:DTSID="{A72D3720-AB15-4A18-8CB0-633EAD8C15D8}" DTS:ExecutableType="Microsoft.Package" DTS:VersionBuild="2">
+  <DTS:ConnectionManagers>
+    <DTS:ConnectionManager DTS:ObjectName="Excel Connection Manager" DTS:CreationName="EXCEL" DTS:DTSID="{A9905A3B-8B43-4164-B0F1-07A81C04C945}">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager DTS:ConnectionString="Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\tawfik2\Dim_Date.xlsx;Extended Properties=&quot;Excel 12.0 XML;HDR=YES&quot;;Password=secret123;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+  </DTS:ConnectionManagers>
+  <DTS:Variables />
+  <DTS:Executables>
+    <DTS:Executable DTS:refId="Package\DFT Dim Date" DTS:CreationName="Microsoft.Pipeline" DTS:ExecutableType="Microsoft.Pipeline" DTS:ObjectName="DFT Dim Date" DTS:DTSID="{5AA3BCB0-1F2A-4901-8944-23FAFE711617}">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <pipeline version="1">
+          <components>
+            <component refId="Package\DFT Dim Date\Excel Source" componentClassID="Microsoft.ExcelSource" name="Excel Source" description="Excel Source" usesDispositions="true" version="1">
+              <properties>
+                <property name="OpenRowset">Sheet1$</property>
+                <property name="AccessMode">0</property>
+              </properties>
+              <outputs>
+                <output refId="Package\DFT Dim Date\Excel Source.Outputs[Excel Source Output]" name="Excel Source Output">
+                  <outputColumns>
+                    <outputColumn refId="Package\DFT Dim Date\Excel Source.Outputs[Excel Source Output].Columns[Full Date]"    dataType="date" name="Full Date"           lineageId="Package\DFT Dim Date\Excel Source.Outputs[Excel Source Output].Columns[Full Date]" />
+                    <outputColumn refId="Package\DFT Dim Date\Excel Source.Outputs[Excel Source Output].Columns[date_key]"     dataType="r8"   name="date_key"            lineageId="Package\DFT Dim Date\Excel Source.Outputs[Excel Source Output].Columns[date_key]" />
+                    <outputColumn refId="Package\DFT Dim Date\Excel Source.Outputs[Excel Source Output].Columns[calendar_year]"    dataType="r8"   name="calendar_year"   lineageId="Package\DFT Dim Date\Excel Source.Outputs[Excel Source Output].Columns[calendar_year]" />
+                    <outputColumn refId="Package\DFT Dim Date\Excel Source.Outputs[Excel Source Output].Columns[calendar_quarter]" dataType="r8"   name="calendar_quarter" lineageId="Package\DFT Dim Date\Excel Source.Outputs[Excel Source Output].Columns[calendar_quarter]" />
+                    <outputColumn refId="Package\DFT Dim Date\Excel Source.Outputs[Excel Source Output].Columns[calendar_month_num]"  dataType="r8"   name="calendar_month_num"  lineageId="Package\DFT Dim Date\Excel Source.Outputs[Excel Source Output].Columns[calendar_month_num]" />
+                    <outputColumn refId="Package\DFT Dim Date\Excel Source.Outputs[Excel Source Output].Columns[calendar_month_name]" dataType="wstr" length="255" name="calendar_month_name" lineageId="Package\DFT Dim Date\Excel Source.Outputs[Excel Source Output].Columns[calendar_month_name]" />
+                  </outputColumns>
+                </output>
+                <output refId="Package\DFT Dim Date\Excel Source.Outputs[Excel Source Error Output]" isErrorOut="true" name="Excel Source Error Output">
+                  <outputColumns>
+                    <outputColumn name="ErrorCode"   dataType="i4" specialFlags="1" lineageId="err1" />
+                    <outputColumn name="ErrorColumn" dataType="i4" specialFlags="2" lineageId="err2" />
+                  </outputColumns>
+                </output>
+              </outputs>
+            </component>
+            <component refId="Package\DFT Dim Date\Data Conversion" componentClassID="Microsoft.DataConvert" name="Data Conversion" description="Data Conversion" usesDispositions="true">
+              <inputs>
+                <input refId="Package\DFT Dim Date\Data Conversion.Inputs[Data Conversion Input]" name="Data Conversion Input">
+                  <inputColumns>
+                    <inputColumn cachedDataType="wstr" cachedLength="255" cachedName="calendar_month_name" lineageId="Package\DFT Dim Date\Excel Source.Outputs[Excel Source Output].Columns[calendar_month_name]" />
+                  </inputColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT Dim Date\Data Conversion.Outputs[Data Conversion Output]" name="Data Conversion Output" synchronousInputId="Package\DFT Dim Date\Data Conversion.Inputs[Data Conversion Input]">
+                  <outputColumns>
+                    <outputColumn dataType="wstr" length="15" name="month name" lineageId="Package\DFT Dim Date\Data Conversion.Outputs[Data Conversion Output].Columns[month name]">
+                      <properties>
+                        <property containsID="true" dataType="System.Int32" name="SourceInputColumnLineageID">#{Package\DFT Dim Date\Excel Source.Outputs[Excel Source Output].Columns[calendar_month_name]}</property>
+                      </properties>
+                    </outputColumn>
+                  </outputColumns>
+                </output>
+                <output refId="Package\DFT Dim Date\Data Conversion.Outputs[Data Conversion Error Output]" isErrorOut="true" name="Data Conversion Error Output" synchronousInputId="Package\DFT Dim Date\Data Conversion.Inputs[Data Conversion Input]">
+                  <outputColumns>
+                    <outputColumn name="ErrorCode"   dataType="i4" specialFlags="1" lineageId="dcerr1" />
+                    <outputColumn name="ErrorColumn" dataType="i4" specialFlags="2" lineageId="dcerr2" />
+                  </outputColumns>
+                </output>
+              </outputs>
+            </component>
+            <component refId="Package\DFT Dim Date\OLE DB Destination" componentClassID="Microsoft.OLEDBDestination" name="OLE DB Destination" description="OLE DB Destination" usesDispositions="true" version="4">
+              <properties>
+                <property name="OpenRowset">[dbo].[dim_date]</property>
+                <property name="AccessMode">3</property>
+              </properties>
+              <inputs>
+                <input refId="Package\DFT Dim Date\OLE DB Destination.Inputs[OLE DB Destination Input]" name="OLE DB Destination Input" hasSideEffects="true">
+                  <inputColumns>
+                    <inputColumn cachedDataType="r8"   cachedName="date_key"           lineageId="Package\DFT Dim Date\Excel Source.Outputs[Excel Source Output].Columns[date_key]" />
+                    <inputColumn cachedDataType="r8"   cachedName="calendar_year"      lineageId="Package\DFT Dim Date\Excel Source.Outputs[Excel Source Output].Columns[calendar_year]" />
+                    <inputColumn cachedDataType="r8"   cachedName="calendar_quarter"   lineageId="Package\DFT Dim Date\Excel Source.Outputs[Excel Source Output].Columns[calendar_quarter]" />
+                    <inputColumn cachedDataType="r8"   cachedName="calendar_month_num" lineageId="Package\DFT Dim Date\Excel Source.Outputs[Excel Source Output].Columns[calendar_month_num]" />
+                    <inputColumn cachedDataType="date" cachedName="Full Date"          lineageId="Package\DFT Dim Date\Excel Source.Outputs[Excel Source Output].Columns[Full Date]" />
+                    <inputColumn cachedDataType="wstr" cachedLength="15" cachedName="month name" lineageId="Package\DFT Dim Date\Data Conversion.Outputs[Data Conversion Output].Columns[month name]" />
+                  </inputColumns>
+                </input>
+              </inputs>
+              <outputs />
+            </component>
+          </components>
+          <paths>
+            <path startId="Package\DFT Dim Date\Excel Source.Outputs[Excel Source Output]"        endId="Package\DFT Dim Date\Data Conversion.Inputs[Data Conversion Input]"        name="Excel Source Output" />
+            <path startId="Package\DFT Dim Date\Data Conversion.Outputs[Data Conversion Output]"  endId="Package\DFT Dim Date\OLE DB Destination.Inputs[OLE DB Destination Input]"  name="Data Conversion Output" />
+          </paths>
+        </pipeline>
+      </DTS:ObjectData>
+    </DTS:Executable>
+  </DTS:Executables>
+</DTS:Executable>

@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.env
+build/
+dist/
+.DS_Store
+*.log
+*.jsonl
+graphify-out/cache/
+graphify-out/2*/

@@ -1,20 +1,188 @@
 {
   ".claude/settings.json": {
-    "mtime": 1790676232.4982164,
-    "seen": 1790684994.1686754,
-    "ast_hash": "d7f6bebe66019bdc998d2e7f3935ba73",
+    "mtime": 1790705036.197977,
+    "seen": 1790717930.9376345,
+    "ast_hash": "a358171992342147c0f97a242a9597d0",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1790676232.4395795,
-    "seen": 1790684994.1686754,
-    "ast_hash": "8a6643a420fdad6bfb583523bc6cef16",
+    "mtime": 1790705036.197977,
+    "seen": 1790717930.9376345,
+    "ast_hash": "82efb97a359f5c7290bf2513d14686be",
     "semantic_hash": ""
   },
   "ssis-to-dbt-converter.md": {
-    "mtime": 1790675901.9767036,
-    "seen": 1790684994.1686754,
-    "ast_hash": "f65e41ebc4febdeba264ae3980ac3644",
+    "mtime": 1790705029.998055,
+    "seen": 1790717930.9376345,
+    "ast_hash": "9a3e85de43da8c35a354d060319538c0",
+    "semantic_hash": ""
+  },
+  "ssis2dbt/__init__.py": {
+    "mtime": 1790717746.8209977,
+    "seen": 1790717930.9376345,
+    "ast_hash": "cbd3f20bbf4f86202ff37ad329d92b39",
+    "semantic_hash": ""
+  },
+  "ssis2dbt/cli/__init__.py": {
+    "mtime": 1790717742.6288295,
+    "seen": 1790717930.9376345,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "ssis2dbt/cli/main.py": {
+    "mtime": 1790717761.2651315,
+    "seen": 1790717930.9376345,
+    "ast_hash": "0a0049dadde9fa2b81b81ae9faf76e9d",
+    "semantic_hash": ""
+  },
+  "ssis2dbt/convert/__init__.py": {
+    "mtime": 1790717741.8919122,
+    "seen": 1790717930.9376345,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "ssis2dbt/convert/components.py": {
+    "mtime": 1790744420.5564592,
+    "seen": 1790744507.174524,
+    "ast_hash": "f9f1958d6dfb17218e9e3e34eddd4e34",
+    "semantic_hash": ""
+  },
+  "ssis2dbt/convert/expression.py": {
+    "mtime": 1790717594.257893,
+    "seen": 1790717930.9376345,
+    "ast_hash": "217c8cc202a657cdf16aad890f726d56",
+    "semantic_hash": ""
+  },
+  "ssis2dbt/convert/generator.py": {
+    "mtime": 1790744439.86071,
+    "seen": 1790744507.174524,
+    "ast_hash": "220857d007a5412349e815414775b9c3",
+    "semantic_hash": ""
+  },
+  "ssis2dbt/dialects/__init__.py": {
+    "mtime": 1790717742.038509,
+    "seen": 1790717930.9376345,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "ssis2dbt/dialects/base.py": {
+    "mtime": 1790717558.7252717,
+    "seen": 1790717930.9376345,
+    "ast_hash": "5331628cab5267f6a1b998a7f18512a5",
+    "semantic_hash": ""
+  },
+  "ssis2dbt/dialects/impls.py": {
+    "mtime": 1790717567.3739045,
+    "seen": 1790717930.9376345,
+    "ast_hash": "44f02c30021b5fe5a074420e3dab1f70",
+    "semantic_hash": ""
+  },
+  "ssis2dbt/engine.py": {
+    "mtime": 1790717705.919641,
+    "seen": 1790717930.9376345,
+    "ast_hash": "e21fa03fe63556ca02fab8385968dac4",
+    "semantic_hash": ""
+  },
+  "ssis2dbt/export/__init__.py": {
+    "mtime": 1790717742.371861,
+    "seen": 1790717930.9376345,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "ssis2dbt/export/project.py": {
+    "mtime": 1790717732.9935746,
+    "seen": 1790717930.9376345,
+    "ast_hash": "8509d6aba7c2c652fcd208c7ebf181f4",
+    "semantic_hash": ""
+  },
+  "ssis2dbt/grade/__init__.py": {
+    "mtime": 1790717742.228859,
+    "seen": 1790717930.9376345,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "ssis2dbt/grade/reasons.py": {
+    "mtime": 1790717611.7176616,
+    "seen": 1790717930.9376345,
+    "ast_hash": "f5ab72c1bf83330204e4503ae45915b4",
+    "semantic_hash": ""
+  },
+  "ssis2dbt/ir/__init__.py": {
+    "mtime": 1790717741.7495863,
+    "seen": 1790717930.9376345,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "ssis2dbt/ir/model.py": {
+    "mtime": 1790744255.461672,
+    "seen": 1790744507.174524,
+    "ast_hash": "2d79cd7fb7a45ef89d38b1e8d7f1fb2a",
+    "semantic_hash": ""
+  },
+  "ssis2dbt/parser/__init__.py": {
+    "mtime": 1790717741.6054187,
+    "seen": 1790717930.9376345,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "ssis2dbt/parser/dtsx.py": {
+    "mtime": 1790744277.7820623,
+    "seen": 1790744507.174524,
+    "ast_hash": "a61cbc69088e9c6e201d0c1081d70dc9",
+    "semantic_hash": ""
+  },
+  "ssis2dbt/parser/redact.py": {
+    "mtime": 1790717501.8823755,
+    "seen": 1790717930.9376345,
+    "ast_hash": "adeaf4fbb2eb0363a2c6b39632e68814",
+    "semantic_hash": ""
+  },
+  "ssis2dbt/ui/__init__.py": {
+    "mtime": 1790717742.4697292,
+    "seen": 1790717930.9376345,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "ssis2dbt/ui/app.py": {
+    "mtime": 1790743616.1239052,
+    "seen": 1790743644.3666975,
+    "ast_hash": "fa6ccbe62555514e8e4113d5e049730b",
+    "semantic_hash": ""
+  },
+  "tests/test_engine.py": {
+    "mtime": 1790717884.3864615,
+    "seen": 1790717930.9376345,
+    "ast_hash": "d52bed6d02bcd11b3b097ece46ce0d21",
+    "semantic_hash": ""
+  },
+  ".pre-commit-config.yaml": {
+    "mtime": 1790705358.149541,
+    "seen": 1790717930.9376345,
+    "ast_hash": "b3172bc8e4c1bfd742f159d24ae8e31f",
+    "semantic_hash": ""
+  },
+  "requirements.txt": {
+    "mtime": 1790717906.5249152,
+    "seen": 1790717930.9376345,
+    "ast_hash": "d730e1b39d9aa053e751b68441db08b3",
+    "semantic_hash": ""
+  },
+  "ssis_to_dbt_migration_engine_prd.md": {
+    "mtime": 1790716946.5354538,
+    "seen": 1790717930.9376345,
+    "ast_hash": "068660f90d75b6c572d1eda049f27c4b",
+    "semantic_hash": ""
+  },
+  "ssis2dbt/ui/flow_diagram.py": {
+    "mtime": 1790743840.122633,
+    "seen": 1790744507.174524,
+    "ast_hash": "81c508978f97b18c1ca39999c81a7458",
+    "semantic_hash": ""
+  },
+  "README.md": {
+    "mtime": 1790717948.077503,
+    "seen": 1790743644.3666975,
+    "ast_hash": "4a55a8ad9d261b6ee090e366282ab299",
     "semantic_hash": ""
   }
 }
