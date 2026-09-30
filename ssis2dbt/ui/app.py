@@ -22,7 +22,6 @@ if _root not in sys.path:
 
 from ssis2dbt import dialects  # noqa: F401
 from ssis2dbt.dialects import impls  # noqa: F401
-from ssis2dbt.dialects.base import available
 from ssis2dbt.engine import ConversionRun, convert_package
 from ssis2dbt.export.project import build_project_files
 from ssis2dbt.ir.model import Grade
@@ -79,18 +78,12 @@ def _zip_bytes(run: ConversionRun) -> bytes:
 # ---------------------------------------------------------------------------
 st.markdown("## SSIS → dbt Migration Engine")
 
-col_file, col_dialect, col_btn = st.columns([4, 1, 1])
+dialect = "snowflake"
+
+col_file, col_btn = st.columns([5, 1])
 with col_file:
     uploaded = st.file_uploader(
         "Import .dtsx", type=["dtsx"], label_visibility="collapsed")
-with col_dialect:
-    dialect = st.selectbox(
-        "Dialect", available(),
-        index=available().index("snowflake") if "snowflake" in available() else 0,
-        label_visibility="collapsed",
-    )
-with col_btn:
-    st.write("")  # vertical align
 
 if uploaded is None:
     st.markdown(

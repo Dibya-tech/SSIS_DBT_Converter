@@ -67,14 +67,17 @@ def translate(expr: str, dialect: Dialect) -> ExprResult:
         # Recursively translate inner expression (handles @[Var], ternary, etc.)
         inner = translate(raw_operand.strip("()"), dialect)
         sqltype = _DT_CAST.get(dt, "varchar")
-        if size and sqltype in ("varchar", "numeric"):
+        if size and sqltype in ("varchar", "numeric", "decimal"):
+            # size may be "50" or "10,2" (precision,scale) — use as-is
             sqltype = f"{sqltype}({size})"
         translated = inner.sql if inner.sql else _col(raw_operand)
         return dialect.cast(translated, sqltype)
 
-    # Pattern covers both (a) column/word and (b) (parenthesised sub-expression)
+    # Pattern covers both (a) column/word and (b) (parenthesised sub-expression).
+    # size captures the first numeric arg (e.g. 50 in DT_WSTR,50); for two-arg
+    # types like DT_NUMERIC,10,2 we capture "10,2" so the type becomes numeric(10,2).
     s = re.sub(
-        r"\(\s*(?P<dt>DT_[A-Z0-9_]+)\s*(?:,\s*(?P<size>\d+)\s*)?\)"
+        r"\(\s*(?P<dt>DT_[A-Z0-9_]+)\s*(?:,\s*(?P<size>\d+(?:\s*,\s*\d+)?)\s*)?\)"
         r"\s*(?:(?P<paren_operand>\([^)]*\))|(?P<operand>\[[^\]]+\]|\w+))",
         _cast_repl, s,
     )
@@ -117,6 +120,25 @@ def translate(expr: str, dialect: Dialect) -> ExprResult:
 
     # string literals: SSIS uses double quotes -> single quotes
     s = re.sub(r'"([^"]*)"', r"'\1'", s)
+
+    # String concatenation: SSIS uses + for both arithmetic and string concat.
+    # Heuristic: if the expression contains any single-quoted string literal, all
+    # + operators are string concatenation -> use dialect concat operator (|| in
+    # Snowflake/Databricks, + in T-SQL).
+    if "'" in s and "+" in s:
+        concat_op = dialect.concat("__A__", "__B__")
+        # detect which operator the dialect uses by inspecting its output
+        if "||" in concat_op:
+            s = re.sub(r"\s*\+\s*", " || ", s)
+        elif concat_op == "__A__ + __B__":
+            pass  # T-SQL keeps +
+        else:
+            # dialect wraps in CONCAT() — rebuild the full chain
+            parts = [p.strip() for p in re.split(r"\+", s)]
+            if len(parts) > 1:
+                s = parts[0]
+                for part in parts[1:]:
+                    s = dialect.concat(s, part)
 
     # column refs [Col] -> col
     s = re.sub(r"\[([^\]]+)\]", lambda m: _col(m.group(0)), s)
