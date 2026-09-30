@@ -229,7 +229,8 @@ def _derived(comp: Component, ctx: Ctx) -> CTEResult:
         res = translate_expr(ssis_expr, ctx.dialect)
         alias = sanitize_identifier(col_name)
         if res.confident:
-            new_cols.append(f"    {res.sql} as {alias}  -- from: {ssis_expr}")
+            ssis_tag = f"  -- SSIS: {res.origin}" if res.origin else ""
+            new_cols.append(f"    {res.sql} as {alias}{ssis_tag}")
         else:
             grade = Grade.WARNING
             reason = "UNMAPPED_FUNCTION"

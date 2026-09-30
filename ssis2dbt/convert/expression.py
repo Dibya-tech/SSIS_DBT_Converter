@@ -18,6 +18,7 @@ class ExprResult:
     sql: str
     confident: bool
     note: str = ""
+    origin: str = ""   # original SSIS expression, for -- SSIS: annotations
 
 
 # SSIS cast tokens -> SQL types
@@ -150,7 +151,8 @@ def translate(expr: str, dialect: Dialect) -> ExprResult:
         notes.append(f"unmapped function(s): {', '.join(sorted(set(leftover)))}")
 
     return ExprResult(sql=s.strip(), confident=confident,
-                      note="; ".join(notes) if notes else "")
+                      note="; ".join(notes) if notes else "",
+                      origin=original.strip())
 
 
 def _col(token: str) -> str:
