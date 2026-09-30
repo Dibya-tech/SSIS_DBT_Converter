@@ -150,6 +150,12 @@ def _parse_executables(root, pkg: Package) -> None:
     container = root.find(_q("Executables"))
     if container is None:
         return
+    _walk_executables(container, pkg)
+
+
+def _walk_executables(container, pkg: Package) -> None:
+    """Recursively walk a DTS:Executables element, discovering DataFlow tasks at
+    any nesting depth (e.g. inside ForEachLoop / Sequence containers)."""
     for ex in container.findall(_q("Executable")):
         etype = _attr(ex, "ExecutableType", "") or ""
         task_type = _classify(etype, _TASK_MAP, "UnknownTask")
@@ -163,6 +169,10 @@ def _parse_executables(root, pkg: Package) -> None:
             df = _parse_pipeline(ex, task)
             if df is not None:
                 pkg.data_flows.append(df)
+        # Recurse into any nested Executables block (ForEach/Sequence/etc.)
+        nested = ex.find(_q("Executables"))
+        if nested is not None:
+            _walk_executables(nested, pkg)
     _parse_precedence(container, pkg)
 
 

@@ -90,6 +90,20 @@ def translate(expr: str, dialect: Dialect) -> ExprResult:
     # ternary  cond ? a : b  -> case when cond then a else b end
     s = _translate_ternary(s)
 
+    # NULL(DT_TYPE) -> CAST(NULL AS <type>)  — SSIS null-literal constructor
+    def _null_repl(m):
+        dt = m.group(1).upper()
+        sqltype = _DT_CAST.get(dt, "varchar")
+        return f"cast(null as {sqltype})"
+
+    s = re.sub(
+        r"\bNULL\s*\(\s*(DT_[A-Z0-9_]+)\s*(?:,\s*\d+\s*)?\)",
+        _null_repl, s, flags=re.I,
+    )
+
+    # GETDATE() -> dialect current_timestamp
+    s = re.sub(r"\bGETDATE\s*\(\s*\)", dialect.current_timestamp(), s, flags=re.I)
+
     # string functions passthrough (UPPER, LOWER, TRIM, LEN/LENGTH)
     s = re.sub(r"\bUPPER\s*\(", "upper(", s, flags=re.I)
     s = re.sub(r"\bLOWER\s*\(", "lower(", s, flags=re.I)
