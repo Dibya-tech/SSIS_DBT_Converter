@@ -17,17 +17,30 @@
       "source_location": "L46"
     },
     {
-      "id": "ssis2dbt_engine_packagemetrics",
-      "label": "PackageMetrics",
+      "id": "ssis2dbt_engine_logentry",
+      "label": "LogEntry",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 1,
       "community_name": "app.py",
       "file_type": "code",
-      "norm_label": "packagemetrics",
+      "norm_label": "logentry",
       "source_file": "ssis2dbt/engine.py",
-      "source_location": "L18"
+      "source_location": "L30"
+    },
+    {
+      "id": "ssis2dbt_ir_model_path",
+      "label": "Path",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "app.py",
+      "file_type": "code",
+      "norm_label": "path",
+      "source_file": "ssis2dbt/ir/model.py",
+      "source_location": "L55"
     },
     {
       "id": "ssis2dbt_ir_model_column",
@@ -69,19 +82,6 @@
       "source_location": "L102"
     },
     {
-      "id": "ssis2dbt_ir_model_path",
-      "label": "Path",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "dtsx.py",
-      "file_type": "code",
-      "norm_label": "path",
-      "source_file": "ssis2dbt/ir/model.py",
-      "source_location": "L55"
-    },
-    {
       "id": "ssis2dbt_ir_model_task",
       "label": "Task",
       "_callable": true,
@@ -106,6 +106,19 @@
       "norm_label": "variable",
       "source_file": "ssis2dbt/ir/model.py",
       "source_location": "L94"
+    },
+    {
+      "id": "ssis2dbt_engine_packagemetrics",
+      "label": "PackageMetrics",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "New files",
+      "file_type": "code",
+      "norm_label": "packagemetrics",
+      "source_file": "ssis2dbt/engine.py",
+      "source_location": "L18"
     },
     {
       "id": "ssis2dbt_convert_components_cteresult",
@@ -225,19 +238,6 @@
       "source_location": "L36"
     },
     {
-      "id": "ssis2dbt_engine_logentry",
-      "label": "LogEntry",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "Grade",
-      "file_type": "code",
-      "norm_label": "logentry",
-      "source_file": "ssis2dbt/engine.py",
-      "source_location": "L30"
-    },
-    {
       "id": "ssis2dbt_grade_reasons_reason",
       "label": "Reason",
       "_callable": true,
@@ -338,6 +338,18 @@
       "source_location": "L64"
     },
     {
+      "id": "ssis2dbt_convert_generator_route_layer",
+      "label": "route_layer()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "app.py",
+      "file_type": "code",
+      "norm_label": "route_layer()",
+      "source_file": "ssis2dbt/convert/generator.py",
+      "source_location": "L154"
+    },
+    {
       "id": "ssis2dbt_dialects_base_available",
       "label": "available()",
       "_callable": true,
@@ -374,18 +386,6 @@
       "source_location": "L87"
     },
     {
-      "id": "ssis2dbt_engine_conversionrun_metrics",
-      "label": ".metrics()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "app.py",
-      "file_type": "code",
-      "norm_label": ".metrics()",
-      "source_file": "ssis2dbt/engine.py",
-      "source_location": "L53"
-    },
-    {
       "id": "ssis2dbt_engine_conversionrun_package_score",
       "label": ".package_score()",
       "_callable": true,
@@ -408,6 +408,42 @@
       "norm_label": ".reason_histogram()",
       "source_file": "ssis2dbt/engine.py",
       "source_location": "L78"
+    },
+    {
+      "id": "ssis2dbt_engine_convert_file",
+      "label": "convert_file()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "app.py",
+      "file_type": "code",
+      "norm_label": "convert_file()",
+      "source_file": "ssis2dbt/engine.py",
+      "source_location": "L131"
+    },
+    {
+      "id": "ssis2dbt_engine_convert_package",
+      "label": "convert_package()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "app.py",
+      "file_type": "code",
+      "norm_label": "convert_package()",
+      "source_file": "ssis2dbt/engine.py",
+      "source_location": "L102"
+    },
+    {
+      "id": "ssis2dbt_engine_logentry_as_dict",
+      "label": ".as_dict()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "app.py",
+      "file_type": "code",
+      "norm_label": ".as_dict()",
+      "source_file": "ssis2dbt/engine.py",
+      "source_location": "L37"
     },
     {
       "id": "ssis2dbt_export_project_build_project_files",
@@ -542,28 +578,28 @@
       "source_location": "L68"
     },
     {
-      "id": "tests_test_engine_test_no_secret_in_any_generated_file",
-      "label": "test_no_secret_in_any_generated_file()",
+      "id": "tests_test_all_examples_main",
+      "label": "main()",
       "_callable": true,
       "_origin": "ast",
       "community": 1,
       "community_name": "app.py",
       "file_type": "code",
-      "norm_label": "test_no_secret_in_any_generated_file()",
-      "source_file": "tests/test_engine.py",
-      "source_location": "L44"
+      "norm_label": "main()",
+      "source_file": "tests/test_all_examples.py",
+      "source_location": "L46"
     },
     {
-      "id": "tests_test_engine_test_sanitize_identifier",
-      "label": "test_sanitize_identifier()",
+      "id": "tests_test_all_examples_test_package",
+      "label": "_test_package()",
       "_callable": true,
       "_origin": "ast",
       "community": 1,
       "community_name": "app.py",
       "file_type": "code",
-      "norm_label": "test_sanitize_identifier()",
-      "source_file": "tests/test_engine.py",
-      "source_location": "L73"
+      "norm_label": "_test_package()",
+      "source_file": "tests/test_all_examples.py",
+      "source_location": "L23"
     },
     {
       "id": "ssis2dbt_parser_dtsx_attr",
@@ -612,6 +648,18 @@
       "norm_label": "_parse_executables()",
       "source_file": "ssis2dbt/parser/dtsx.py",
       "source_location": "L149"
+    },
+    {
+      "id": "ssis2dbt_parser_dtsx_parse_file",
+      "label": "parse_file()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "dtsx.py",
+      "file_type": "code",
+      "norm_label": "parse_file()",
+      "source_file": "ssis2dbt/parser/dtsx.py",
+      "source_location": "L83"
     },
     {
       "id": "ssis2dbt_parser_dtsx_parse_pipeline",
@@ -734,40 +782,40 @@
       "source_location": "L308"
     },
     {
-      "id": "ssis2dbt_parser_redact_is_sensitive_key",
-      "label": "is_sensitive_key()",
+      "id": "tests_test_engine_test_credentials_redacted_at_parser",
+      "label": "test_credentials_redacted_at_parser()",
       "_callable": true,
       "_origin": "ast",
       "community": 2,
       "community_name": "dtsx.py",
       "file_type": "code",
-      "norm_label": "is_sensitive_key()",
-      "source_file": "ssis2dbt/parser/redact.py",
-      "source_location": "L24"
+      "norm_label": "test_credentials_redacted_at_parser()",
+      "source_file": "tests/test_engine.py",
+      "source_location": "L26"
     },
     {
-      "id": "ssis2dbt_parser_redact_redact_properties",
-      "label": "redact_properties()",
+      "id": "tests_test_engine_test_parse_sample",
+      "label": "test_parse_sample()",
       "_callable": true,
       "_origin": "ast",
       "community": 2,
       "community_name": "dtsx.py",
       "file_type": "code",
-      "norm_label": "redact_properties()",
-      "source_file": "ssis2dbt/parser/redact.py",
-      "source_location": "L34"
+      "norm_label": "test_parse_sample()",
+      "source_file": "tests/test_engine.py",
+      "source_location": "L17"
     },
     {
-      "id": "ssis2dbt_parser_redact_redact_value",
-      "label": "redact_value()",
+      "id": "ssis2dbt_engine_conversionrun_metrics",
+      "label": ".metrics()",
       "_callable": true,
       "_origin": "ast",
-      "community": 2,
-      "community_name": "dtsx.py",
+      "community": 24,
+      "community_name": "New files",
       "file_type": "code",
-      "norm_label": "redact_value()",
-      "source_file": "ssis2dbt/parser/redact.py",
-      "source_location": "L28"
+      "norm_label": ".metrics()",
+      "source_file": "ssis2dbt/engine.py",
+      "source_location": "L53"
     },
     {
       "id": "ssis2dbt_convert_components_aggregate",
@@ -1406,18 +1454,6 @@
       "source_location": "L83"
     },
     {
-      "id": "ssis2dbt_convert_generator_route_layer",
-      "label": "route_layer()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "Grade",
-      "file_type": "code",
-      "norm_label": "route_layer()",
-      "source_file": "ssis2dbt/convert/generator.py",
-      "source_location": "L154"
-    },
-    {
       "id": "ssis2dbt_convert_generator_source_ref",
       "label": "_source_ref()",
       "_callable": true,
@@ -1440,42 +1476,6 @@
       "norm_label": "_topo_order()",
       "source_file": "ssis2dbt/convert/generator.py",
       "source_location": "L51"
-    },
-    {
-      "id": "ssis2dbt_engine_convert_file",
-      "label": "convert_file()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "Grade",
-      "file_type": "code",
-      "norm_label": "convert_file()",
-      "source_file": "ssis2dbt/engine.py",
-      "source_location": "L131"
-    },
-    {
-      "id": "ssis2dbt_engine_convert_package",
-      "label": "convert_package()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "Grade",
-      "file_type": "code",
-      "norm_label": "convert_package()",
-      "source_file": "ssis2dbt/engine.py",
-      "source_location": "L102"
-    },
-    {
-      "id": "ssis2dbt_engine_logentry_as_dict",
-      "label": ".as_dict()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "Grade",
-      "file_type": "code",
-      "norm_label": ".as_dict()",
-      "source_file": "ssis2dbt/engine.py",
-      "source_location": "L37"
     },
     {
       "id": "ssis2dbt_grade_reasons_get",
@@ -1622,16 +1622,40 @@
       "source_location": "L45"
     },
     {
-      "id": "ssis2dbt_parser_dtsx_parse_file",
-      "label": "parse_file()",
+      "id": "ssis2dbt_parser_redact_is_sensitive_key",
+      "label": "is_sensitive_key()",
       "_callable": true,
       "_origin": "ast",
       "community": 7,
       "community_name": "test_engine.py",
       "file_type": "code",
-      "norm_label": "parse_file()",
-      "source_file": "ssis2dbt/parser/dtsx.py",
-      "source_location": "L83"
+      "norm_label": "is_sensitive_key()",
+      "source_file": "ssis2dbt/parser/redact.py",
+      "source_location": "L24"
+    },
+    {
+      "id": "ssis2dbt_parser_redact_redact_properties",
+      "label": "redact_properties()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "test_engine.py",
+      "file_type": "code",
+      "norm_label": "redact_properties()",
+      "source_file": "ssis2dbt/parser/redact.py",
+      "source_location": "L34"
+    },
+    {
+      "id": "ssis2dbt_parser_redact_redact_value",
+      "label": "redact_value()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "test_engine.py",
+      "file_type": "code",
+      "norm_label": "redact_value()",
+      "source_file": "ssis2dbt/parser/redact.py",
+      "source_location": "L28"
     },
     {
       "id": "tests_test_engine_test_convert_produces_model_and_grades",
@@ -1644,18 +1668,6 @@
       "norm_label": "test_convert_produces_model_and_grades()",
       "source_file": "tests/test_engine.py",
       "source_location": "L33"
-    },
-    {
-      "id": "tests_test_engine_test_credentials_redacted_at_parser",
-      "label": "test_credentials_redacted_at_parser()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "test_engine.py",
-      "file_type": "code",
-      "norm_label": "test_credentials_redacted_at_parser()",
-      "source_file": "tests/test_engine.py",
-      "source_location": "L26"
     },
     {
       "id": "tests_test_engine_test_dialect_differences",
@@ -1682,16 +1694,16 @@
       "source_location": "L58"
     },
     {
-      "id": "tests_test_engine_test_parse_sample",
-      "label": "test_parse_sample()",
+      "id": "tests_test_engine_test_no_secret_in_any_generated_file",
+      "label": "test_no_secret_in_any_generated_file()",
       "_callable": true,
       "_origin": "ast",
       "community": 7,
       "community_name": "test_engine.py",
       "file_type": "code",
-      "norm_label": "test_parse_sample()",
+      "norm_label": "test_no_secret_in_any_generated_file()",
       "source_file": "tests/test_engine.py",
-      "source_location": "L17"
+      "source_location": "L44"
     },
     {
       "id": "tests_test_engine_test_redact_properties",
@@ -1704,6 +1716,18 @@
       "norm_label": "test_redact_properties()",
       "source_file": "tests/test_engine.py",
       "source_location": "L78"
+    },
+    {
+      "id": "tests_test_engine_test_sanitize_identifier",
+      "label": "test_sanitize_identifier()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "test_engine.py",
+      "file_type": "code",
+      "norm_label": "test_sanitize_identifier()",
+      "source_file": "tests/test_engine.py",
+      "source_location": "L73"
     },
     {
       "id": "tests_test_engine_test_unmapped_function_flagged",
@@ -2100,6 +2124,17 @@
       "source_location": "L1"
     },
     {
+      "id": "ssis2dbt_dialects_base",
+      "label": "base.py",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "app.py",
+      "file_type": "code",
+      "norm_label": "base.py",
+      "source_file": "ssis2dbt/dialects/base.py",
+      "source_location": "L1"
+    },
+    {
       "id": "ssis2dbt_dialects_init",
       "label": "dialects/__init__.py",
       "_origin": "ast",
@@ -2111,6 +2146,17 @@
       "source_location": "L1"
     },
     {
+      "id": "ssis2dbt_engine",
+      "label": "engine.py",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "app.py",
+      "file_type": "code",
+      "norm_label": "engine.py",
+      "source_file": "ssis2dbt/engine.py",
+      "source_location": "L1"
+    },
+    {
       "id": "ssis2dbt_export_project",
       "label": "project.py",
       "_origin": "ast",
@@ -2119,6 +2165,17 @@
       "file_type": "code",
       "norm_label": "project.py",
       "source_file": "ssis2dbt/export/project.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "ssis2dbt_init",
+      "label": "ssis2dbt/__init__.py",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "app.py",
+      "file_type": "code",
+      "norm_label": "ssis2dbt/__init__.py",
+      "source_file": "ssis2dbt/__init__.py",
       "source_location": "L1"
     },
     {
@@ -2144,6 +2201,17 @@
       "source_location": "L1"
     },
     {
+      "id": "tests_test_all_examples",
+      "label": "test_all_examples.py",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "app.py",
+      "file_type": "code",
+      "norm_label": "test_all_examples.py",
+      "source_file": "tests/test_all_examples.py",
+      "source_location": "L1"
+    },
+    {
       "id": "ssis2dbt_cli_main_rationale_1",
       "label": "Command-line interface for the SSIS-to-dbt Migration Engine. Examples: python\u2026",
       "_origin": "ast",
@@ -2152,6 +2220,39 @@
       "file_type": "rationale",
       "norm_label": "command-line interface for the ssis-to-dbt migration engine. examples: python...",
       "source_file": "ssis2dbt/cli/main.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "ssis2dbt_convert_generator_rationale_155",
+      "label": "Heuristic layer routing (PRD 9.2).",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "app.py",
+      "file_type": "rationale",
+      "norm_label": "heuristic layer routing (prd 9.2).",
+      "source_file": "ssis2dbt/convert/generator.py",
+      "source_location": "L155"
+    },
+    {
+      "id": "ssis2dbt_dialects_base_rationale_1",
+      "label": "Dialect emitters translate dialect-neutral concerns into target SQL. Adding a\u2026",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "app.py",
+      "file_type": "rationale",
+      "norm_label": "dialect emitters translate dialect-neutral concerns into target sql. adding a...",
+      "source_file": "ssis2dbt/dialects/base.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "ssis2dbt_engine_rationale_1",
+      "label": "Top-level orchestration: parse -> convert -> grade -> summarize. The engine\u2026",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "app.py",
+      "file_type": "rationale",
+      "norm_label": "top-level orchestration: parse -> convert -> grade -> summarize. the engine...",
+      "source_file": "ssis2dbt/engine.py",
       "source_location": "L1"
     },
     {
@@ -2177,6 +2278,17 @@
       "source_location": "L15"
     },
     {
+      "id": "ssis2dbt_init_rationale_1",
+      "label": "SSIS-to-dbt Migration Engine. Parse SSIS .dtsx packages into deployable dbt\u2026",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "app.py",
+      "file_type": "rationale",
+      "norm_label": "ssis-to-dbt migration engine. parse ssis .dtsx packages into deployable dbt...",
+      "source_file": "ssis2dbt/__init__.py",
+      "source_location": "L1"
+    },
+    {
       "id": "ssis2dbt_ir_model_rationale_123",
       "label": "Sanitize an SSIS component name into a SQL-safe identifier. Spaces and special\u2026",
       "_origin": "ast",
@@ -2188,6 +2300,17 @@
       "source_location": "L123"
     },
     {
+      "id": "ssis2dbt_ir_model_rationale_56",
+      "label": "An edge in the data flow graph: source component output -> target input.",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "app.py",
+      "file_type": "rationale",
+      "norm_label": "an edge in the data flow graph: source component output -> target input.",
+      "source_file": "ssis2dbt/ir/model.py",
+      "source_location": "L56"
+    },
+    {
       "id": "ssis2dbt_ui_app_rationale_1",
       "label": "Streamlit UI for the SSIS-to-dbt Migration Engine. Dark, minimal, dual-pane\u2026",
       "_origin": "ast",
@@ -2196,6 +2319,17 @@
       "file_type": "rationale",
       "norm_label": "streamlit ui for the ssis-to-dbt migration engine. dark, minimal, dual-pane...",
       "source_file": "ssis2dbt/ui/app.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "tests_test_all_examples_rationale_1",
+      "label": "Integration test: convert every example .dtsx and report results.",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "app.py",
+      "file_type": "rationale",
+      "norm_label": "integration test: convert every example .dtsx and report results.",
+      "source_file": "tests/test_all_examples.py",
       "source_location": "L1"
     },
     {
@@ -2629,6 +2763,17 @@
       "source_location": "L1"
     },
     {
+      "id": "fspath",
+      "label": "FsPath",
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "dtsx.py",
+      "file_type": "code",
+      "norm_label": "fspath",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "ssis2dbt_ir_model",
       "label": "model.py",
       "_origin": "ast",
@@ -2651,17 +2796,6 @@
       "source_location": "L1"
     },
     {
-      "id": "ssis2dbt_parser_redact",
-      "label": "redact.py",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "dtsx.py",
-      "file_type": "code",
-      "norm_label": "redact.py",
-      "source_file": "ssis2dbt/parser/redact.py",
-      "source_location": "L1"
-    },
-    {
       "id": "ssis2dbt_ir_model_rationale_1",
       "label": "Dialect-neutral Intermediate Representation (IR) for a parsed SSIS package. The\u2026",
       "_origin": "ast",
@@ -2671,17 +2805,6 @@
       "norm_label": "dialect-neutral intermediate representation (ir) for a parsed ssis package. the...",
       "source_file": "ssis2dbt/ir/model.py",
       "source_location": "L1"
-    },
-    {
-      "id": "ssis2dbt_ir_model_rationale_56",
-      "label": "An edge in the data flow graph: source component output -> target input.",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "dtsx.py",
-      "file_type": "rationale",
-      "norm_label": "an edge in the data flow graph: source component output -> target input.",
-      "source_file": "ssis2dbt/ir/model.py",
-      "source_location": "L56"
     },
     {
       "id": "ssis2dbt_parser_dtsx_rationale_1",
@@ -2739,28 +2862,6 @@
       "source_location": "L70"
     },
     {
-      "id": "ssis2dbt_parser_redact_rationale_1",
-      "label": "Credential redaction, applied at the parser layer (PRD section 10.3). Sensitive\u2026",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "dtsx.py",
-      "file_type": "rationale",
-      "norm_label": "credential redaction, applied at the parser layer (prd section 10.3). sensitive...",
-      "source_file": "ssis2dbt/parser/redact.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "ssis2dbt_parser_redact_rationale_35",
-      "label": "Return a copy of props with sensitive values redacted.",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "dtsx.py",
-      "file_type": "rationale",
-      "norm_label": "return a copy of props with sensitive values redacted.",
-      "source_file": "ssis2dbt/parser/redact.py",
-      "source_location": "L35"
-    },
-    {
       "id": "ssis2dbt_export_init",
       "label": "export/__init__.py",
       "_origin": "ast",
@@ -2805,11 +2906,71 @@
       "source_location": "L1"
     },
     {
+      "id": "changes",
+      "label": "CHANGES.md",
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "New files",
+      "file_type": "document",
+      "node_kind": "page",
+      "norm_label": "changes.md",
+      "source_file": "CHANGES.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "changes_change_log",
+      "label": "Change Log",
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "New files",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "change log",
+      "source_file": "CHANGES.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "changes_key_design_decisions_tracked_in_graphify",
+      "label": "Key design decisions tracked in graphify",
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "New files",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "key design decisions tracked in graphify",
+      "source_file": "CHANGES.md",
+      "source_location": "L31"
+    },
+    {
+      "id": "changes_new_files",
+      "label": "New files",
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "New files",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "new files",
+      "source_file": "CHANGES.md",
+      "source_location": "L5"
+    },
+    {
+      "id": "changes_session_2026_09_30_initial_build_column_ui_improvements",
+      "label": "Session 2026-09-30 \u2014 Initial build + column & UI improvements",
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "New files",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "session 2026-09-30 \u2014 initial build + column & ui improvements",
+      "source_file": "CHANGES.md",
+      "source_location": "L3"
+    },
+    {
       "id": "readme",
       "label": "README.md",
       "_origin": "ast",
       "community": 25,
-      "community_name": "SSIS \u2192 dbt Migration Engine",
+      "community_name": "SSIS to dbt Migration Engine",
       "file_type": "document",
       "node_kind": "page",
       "norm_label": "readme.md",
@@ -2821,7 +2982,7 @@
       "label": "Architecture",
       "_origin": "ast",
       "community": 25,
-      "community_name": "SSIS \u2192 dbt Migration Engine",
+      "community_name": "SSIS to dbt Migration Engine",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "architecture",
@@ -2833,7 +2994,7 @@
       "label": "Quick start",
       "_origin": "ast",
       "community": 25,
-      "community_name": "SSIS \u2192 dbt Migration Engine",
+      "community_name": "SSIS to dbt Migration Engine",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "quick start",
@@ -2841,14 +3002,14 @@
       "source_location": "L5"
     },
     {
-      "id": "readme_ssis_dbt_migration_engine",
-      "label": "SSIS \u2192 dbt Migration Engine",
+      "id": "readme_ssis_to_dbt_migration_engine",
+      "label": "SSIS to dbt Migration Engine",
       "_origin": "ast",
       "community": 25,
-      "community_name": "SSIS \u2192 dbt Migration Engine",
+      "community_name": "SSIS to dbt Migration Engine",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "ssis \u2192 dbt migration engine",
+      "norm_label": "ssis to dbt migration engine",
       "source_file": "README.md",
       "source_location": "L1"
     },
@@ -2857,7 +3018,7 @@
       "label": "Supported dialects",
       "_origin": "ast",
       "community": 25,
-      "community_name": "SSIS \u2192 dbt Migration Engine",
+      "community_name": "SSIS to dbt Migration Engine",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "supported dialects",
@@ -2869,7 +3030,7 @@
       "label": "Supported SSIS components",
       "_origin": "ast",
       "community": 25,
-      "community_name": "SSIS \u2192 dbt Migration Engine",
+      "community_name": "SSIS to dbt Migration Engine",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "supported ssis components",
@@ -2881,7 +3042,7 @@
       "label": "Tests",
       "_origin": "ast",
       "community": 25,
-      "community_name": "SSIS \u2192 dbt Migration Engine",
+      "community_name": "SSIS to dbt Migration Engine",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "tests",
@@ -2893,7 +3054,7 @@
       "label": "What it does",
       "_origin": "ast",
       "community": 25,
-      "community_name": "SSIS \u2192 dbt Migration Engine",
+      "community_name": "SSIS to dbt Migration Engine",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "what it does",
@@ -3013,17 +3174,6 @@
       "source_location": "L1"
     },
     {
-      "id": "ssis2dbt_dialects_base",
-      "label": "base.py",
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "Dialect",
-      "file_type": "code",
-      "norm_label": "base.py",
-      "source_file": "ssis2dbt/dialects/base.py",
-      "source_location": "L1"
-    },
-    {
       "id": "ssis2dbt_dialects_impls",
       "label": "impls.py",
       "_origin": "ast",
@@ -3071,17 +3221,6 @@
       "source_location": "L237"
     },
     {
-      "id": "ssis2dbt_dialects_base_rationale_1",
-      "label": "Dialect emitters translate dialect-neutral concerns into target SQL. Adding a\u2026",
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "Dialect",
-      "file_type": "rationale",
-      "norm_label": "dialect emitters translate dialect-neutral concerns into target sql. adding a...",
-      "source_file": "ssis2dbt/dialects/base.py",
-      "source_location": "L1"
-    },
-    {
       "id": "ssis2dbt_dialects_impls_rationale_1",
       "label": "Concrete dialect implementations (PRD section 6.1).",
       "_origin": "ast",
@@ -3115,17 +3254,6 @@
       "source_location": "L1"
     },
     {
-      "id": "ssis2dbt_engine",
-      "label": "engine.py",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "Grade",
-      "file_type": "code",
-      "norm_label": "engine.py",
-      "source_file": "ssis2dbt/engine.py",
-      "source_location": "L1"
-    },
-    {
       "id": "ssis2dbt_grade_reasons",
       "label": "reasons.py",
       "_origin": "ast",
@@ -3134,17 +3262,6 @@
       "file_type": "code",
       "norm_label": "reasons.py",
       "source_file": "ssis2dbt/grade/reasons.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "ssis2dbt_init",
-      "label": "ssis2dbt/__init__.py",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "Grade",
-      "file_type": "code",
-      "norm_label": "ssis2dbt/__init__.py",
-      "source_file": "ssis2dbt/__init__.py",
       "source_location": "L1"
     },
     {
@@ -3170,6 +3287,18 @@
       "source_location": ""
     },
     {
+      "id": "changes_graphify_community_map",
+      "label": "Graphify community map",
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "Grade",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "graphify community map",
+      "source_file": "CHANGES.md",
+      "source_location": "L42"
+    },
+    {
       "id": "ssis2dbt_convert_generator_rationale_1",
       "label": "Generate a dbt model (chained CTEs) from a Data Flow (PRD section 4). Design\u2026",
       "_origin": "ast",
@@ -3179,17 +3308,6 @@
       "norm_label": "generate a dbt model (chained ctes) from a data flow (prd section 4). design...",
       "source_file": "ssis2dbt/convert/generator.py",
       "source_location": "L1"
-    },
-    {
-      "id": "ssis2dbt_convert_generator_rationale_155",
-      "label": "Heuristic layer routing (PRD 9.2).",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "Grade",
-      "file_type": "rationale",
-      "norm_label": "heuristic layer routing (prd 9.2).",
-      "source_file": "ssis2dbt/convert/generator.py",
-      "source_location": "L155"
     },
     {
       "id": "ssis2dbt_convert_generator_rationale_45",
@@ -3203,17 +3321,6 @@
       "source_location": "L45"
     },
     {
-      "id": "ssis2dbt_engine_rationale_1",
-      "label": "Top-level orchestration: parse -> convert -> grade -> summarize. The engine\u2026",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "Grade",
-      "file_type": "rationale",
-      "norm_label": "top-level orchestration: parse -> convert -> grade -> summarize. the engine...",
-      "source_file": "ssis2dbt/engine.py",
-      "source_location": "L1"
-    },
-    {
       "id": "ssis2dbt_grade_reasons_rationale_1",
       "label": "Reason-code catalog for Warning / Manual components (PRD section 8.3).",
       "_origin": "ast",
@@ -3222,17 +3329,6 @@
       "file_type": "rationale",
       "norm_label": "reason-code catalog for warning / manual components (prd section 8.3).",
       "source_file": "ssis2dbt/grade/reasons.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "ssis2dbt_init_rationale_1",
-      "label": "SSIS-to-dbt Migration Engine. Parse SSIS .dtsx packages into deployable dbt\u2026",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "Grade",
-      "file_type": "rationale",
-      "norm_label": "ssis-to-dbt migration engine. parse ssis .dtsx packages into deployable dbt...",
-      "source_file": "ssis2dbt/__init__.py",
       "source_location": "L1"
     },
     {
@@ -3291,17 +3387,6 @@
       "source_location": "L75"
     },
     {
-      "id": "fspath",
-      "label": "FsPath",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "test_engine.py",
-      "file_type": "code",
-      "norm_label": "fspath",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
       "id": "parametrize",
       "label": "parametrize",
       "_origin": "ast",
@@ -3321,6 +3406,17 @@
       "file_type": "code",
       "norm_label": "expression.py",
       "source_file": "ssis2dbt/convert/expression.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "ssis2dbt_parser_redact",
+      "label": "redact.py",
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "test_engine.py",
+      "file_type": "code",
+      "norm_label": "redact.py",
+      "source_file": "ssis2dbt/parser/redact.py",
       "source_location": "L1"
     },
     {
@@ -3366,6 +3462,28 @@
       "norm_label": "convert cond ? a : b into case when cond then a else b end. handles a single...",
       "source_file": "ssis2dbt/convert/expression.py",
       "source_location": "L109"
+    },
+    {
+      "id": "ssis2dbt_parser_redact_rationale_1",
+      "label": "Credential redaction, applied at the parser layer (PRD section 10.3). Sensitive\u2026",
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "test_engine.py",
+      "file_type": "rationale",
+      "norm_label": "credential redaction, applied at the parser layer (prd section 10.3). sensitive...",
+      "source_file": "ssis2dbt/parser/redact.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "ssis2dbt_parser_redact_rationale_35",
+      "label": "Return a copy of props with sensitive values redacted.",
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "test_engine.py",
+      "file_type": "rationale",
+      "norm_label": "return a copy of props with sensitive values redacted.",
+      "source_file": "ssis2dbt/parser/redact.py",
+      "source_location": "L35"
     },
     {
       "id": "tests_test_engine_rationale_1",
@@ -3679,18 +3797,6 @@
       "type": "external"
     },
     {
-      "id": "re",
-      "label": "re",
-      "_origin": "semantic",
-      "community": 2,
-      "community_name": "dtsx.py",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "re",
-      "source_file": "",
-      "type": "external"
-    },
-    {
       "id": "xml_etree_elementtree",
       "label": "xml_etree_elementtree",
       "_origin": "semantic",
@@ -3759,6 +3865,18 @@
       "external": true,
       "file_type": "concept",
       "norm_label": "pytest",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "re",
+      "label": "re",
+      "_origin": "semantic",
+      "community": 7,
+      "community_name": "test_engine.py",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "re",
       "source_file": "",
       "type": "external"
     }
@@ -5565,6 +5683,42 @@
       "weight": 1.0
     },
     {
+      "source": "tests_test_all_examples_main",
+      "target": "tests_test_all_examples_test_package",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "tests/test_all_examples.py",
+      "source_location": "L55",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_all_examples_test_package",
+      "target": "ssis2dbt_engine_convert_file",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "tests/test_all_examples.py",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_all_examples_test_package",
+      "target": "ssis2dbt_export_project_build_project_files",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "tests/test_all_examples.py",
+      "source_location": "L25",
+      "weight": 1.0
+    },
+    {
       "source": "tests_test_engine_test_convert_produces_model_and_grades",
       "target": "ssis2dbt_engine_convert_file",
       "relation": "calls",
@@ -6777,6 +6931,66 @@
       "weight": 1.0
     },
     {
+      "source": "tests_test_all_examples",
+      "target": "ssis2dbt_engine_convert_file",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "tests/test_all_examples.py",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_all_examples",
+      "target": "ssis2dbt_export_project_build_project_files",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "tests/test_all_examples.py",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_all_examples",
+      "target": "re",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "tests/test_all_examples.py",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_all_examples",
+      "target": "sys",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "tests/test_all_examples.py",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_all_examples",
+      "target": "io",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "tests/test_all_examples.py",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
       "source": "tests_test_engine",
       "target": "ssis2dbt_ir_model_grade",
       "relation": "imports",
@@ -7437,6 +7651,42 @@
       "weight": 1.0
     },
     {
+      "source": "tests_test_all_examples",
+      "target": "ssis2dbt_engine",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "tests/test_all_examples.py",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_all_examples",
+      "target": "ssis2dbt_export_project",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "tests/test_all_examples.py",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_all_examples",
+      "target": "pathlib",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "tests/test_all_examples.py",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
       "source": "tests_test_engine",
       "target": "ssis2dbt_ir_model",
       "relation": "imports_from",
@@ -7821,6 +8071,18 @@
       "weight": 1.0
     },
     {
+      "source": "tests_test_all_examples_test_package",
+      "target": "ssis2dbt_ir_model_path",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "parameter_type",
+      "source_file": "tests/test_all_examples.py",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
       "source": "ssis2dbt_cli_main_build_parser",
       "target": "argumentparser",
       "relation": "references",
@@ -8001,6 +8263,61 @@
       "weight": 1.0
     },
     {
+      "source": "changes",
+      "target": "changes_change_log",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CHANGES.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "changes_change_log",
+      "target": "changes_session_2026_09_30_initial_build_column_ui_improvements",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CHANGES.md",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "changes_session_2026_09_30_initial_build_column_ui_improvements",
+      "target": "changes_key_design_decisions_tracked_in_graphify",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CHANGES.md",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "changes_session_2026_09_30_initial_build_column_ui_improvements",
+      "target": "changes_graphify_community_map",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CHANGES.md",
+      "source_location": "L42",
+      "weight": 1.0
+    },
+    {
+      "source": "changes_session_2026_09_30_initial_build_column_ui_improvements",
+      "target": "changes_new_files",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CHANGES.md",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
       "source": "claude",
       "target": "claude_graphify",
       "relation": "contains",
@@ -8013,7 +8330,7 @@
     },
     {
       "source": "readme",
-      "target": "readme_ssis_dbt_migration_engine",
+      "target": "readme_ssis_to_dbt_migration_engine",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -8023,7 +8340,7 @@
       "weight": 1.0
     },
     {
-      "source": "readme_ssis_dbt_migration_engine",
+      "source": "readme_ssis_to_dbt_migration_engine",
       "target": "readme_what_it_does",
       "relation": "contains",
       "_origin": "ast",
@@ -8034,7 +8351,7 @@
       "weight": 1.0
     },
     {
-      "source": "readme_ssis_dbt_migration_engine",
+      "source": "readme_ssis_to_dbt_migration_engine",
       "target": "readme_supported_dialects",
       "relation": "contains",
       "_origin": "ast",
@@ -8045,7 +8362,7 @@
       "weight": 1.0
     },
     {
-      "source": "readme_ssis_dbt_migration_engine",
+      "source": "readme_ssis_to_dbt_migration_engine",
       "target": "readme_supported_ssis_components",
       "relation": "contains",
       "_origin": "ast",
@@ -8056,7 +8373,7 @@
       "weight": 1.0
     },
     {
-      "source": "readme_ssis_dbt_migration_engine",
+      "source": "readme_ssis_to_dbt_migration_engine",
       "target": "readme_architecture",
       "relation": "contains",
       "_origin": "ast",
@@ -8067,7 +8384,7 @@
       "weight": 1.0
     },
     {
-      "source": "readme_ssis_dbt_migration_engine",
+      "source": "readme_ssis_to_dbt_migration_engine",
       "target": "readme_quick_start",
       "relation": "contains",
       "_origin": "ast",
@@ -8078,7 +8395,7 @@
       "weight": 1.0
     },
     {
-      "source": "readme_ssis_dbt_migration_engine",
+      "source": "readme_ssis_to_dbt_migration_engine",
       "target": "readme_tests",
       "relation": "contains",
       "_origin": "ast",
@@ -10091,6 +10408,28 @@
       "weight": 1.0
     },
     {
+      "source": "tests_test_all_examples",
+      "target": "tests_test_all_examples_test_package",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_all_examples.py",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_all_examples",
+      "target": "tests_test_all_examples_main",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_all_examples.py",
+      "source_location": "L46",
+      "weight": 1.0
+    },
+    {
       "source": "tests_test_engine",
       "target": "tests_test_engine_test_parse_sample",
       "relation": "contains",
@@ -10982,6 +11321,17 @@
       "weight": 1.0
     },
     {
+      "source": "tests_test_all_examples_rationale_1",
+      "target": "tests_test_all_examples",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_all_examples.py",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
       "source": "tests_test_engine_rationale_1",
       "target": "tests_test_engine",
       "relation": "rationale_for",
@@ -11077,6 +11427,282 @@
       "weight": 1.0
     },
     {
+      "source": "changes_graphify_community_map",
+      "target": "ssis2dbt_convert_components_cteresult",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "CTEResult",
+      "source_file": "CHANGES.md",
+      "source_location": "L47",
+      "weight": 1.0
+    },
+    {
+      "source": "changes_graphify_community_map",
+      "target": "ssis2dbt_ir_model_column",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "Column",
+      "source_file": "CHANGES.md",
+      "source_location": "L46",
+      "weight": 1.0
+    },
+    {
+      "source": "changes_new_files",
+      "target": "ssis2dbt_ir_model_column",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "Column",
+      "source_file": "CHANGES.md",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "changes_graphify_community_map",
+      "target": "ssis2dbt_ir_model_component",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "Component",
+      "source_file": "CHANGES.md",
+      "source_location": "L47",
+      "weight": 1.0
+    },
+    {
+      "source": "changes_new_files",
+      "target": "ssis2dbt_ir_model_component",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "Component",
+      "source_file": "CHANGES.md",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "changes_graphify_community_map",
+      "target": "ssis2dbt_engine_conversionrun",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "ConversionRun",
+      "source_file": "CHANGES.md",
+      "source_location": "L49",
+      "weight": 1.0
+    },
+    {
+      "source": "changes_new_files",
+      "target": "ssis2dbt_engine_conversionrun",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "ConversionRun",
+      "source_file": "CHANGES.md",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "changes_graphify_community_map",
+      "target": "ssis2dbt_convert_components_ctx",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "Ctx",
+      "source_file": "CHANGES.md",
+      "source_location": "L47",
+      "weight": 1.0
+    },
+    {
+      "source": "changes_new_files",
+      "target": "ssis2dbt_ir_model_dataflow",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "DataFlow",
+      "source_file": "CHANGES.md",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "changes_graphify_community_map",
+      "target": "ssis2dbt_dialects_base_dialect",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "Dialect",
+      "source_file": "CHANGES.md",
+      "source_location": "L50",
+      "weight": 1.0
+    },
+    {
+      "source": "changes_new_files",
+      "target": "ssis2dbt_dialects_base_dialect",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "Dialect",
+      "source_file": "CHANGES.md",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "changes_graphify_community_map",
+      "target": "ssis2dbt_convert_generator_generatedmodel",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "GeneratedModel",
+      "source_file": "CHANGES.md",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "changes_graphify_community_map",
+      "target": "ssis2dbt_ir_model_grade",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "Grade",
+      "source_file": "CHANGES.md",
+      "source_location": "L47",
+      "weight": 1.0
+    },
+    {
+      "source": "changes_new_files",
+      "target": "ssis2dbt_ir_model_grade",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "Grade",
+      "source_file": "CHANGES.md",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "changes_graphify_community_map",
+      "target": "ssis2dbt_ir_model_package",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "Package",
+      "source_file": "CHANGES.md",
+      "source_location": "L46",
+      "weight": 1.0
+    },
+    {
+      "source": "changes_new_files",
+      "target": "ssis2dbt_ir_model_package",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "Package",
+      "source_file": "CHANGES.md",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "changes_new_files",
+      "target": "ssis2dbt_engine_packagemetrics",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "PackageMetrics",
+      "source_file": "CHANGES.md",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "changes_key_design_decisions_tracked_in_graphify",
+      "target": "ssis2dbt_parser_dtsx_read_properties",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "_read_properties",
+      "source_file": "CHANGES.md",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "changes_new_files",
+      "target": "ssis2dbt_dialects_base_available",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "available",
+      "source_file": "CHANGES.md",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "changes_graphify_community_map",
+      "target": "ssis2dbt_export_project_build_project_files",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "build_project_files()",
+      "source_file": "CHANGES.md",
+      "source_location": "L49",
+      "weight": 1.0
+    },
+    {
+      "source": "changes_graphify_community_map",
+      "target": "ssis2dbt_convert_components_convert_component",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "convert_component()",
+      "source_file": "CHANGES.md",
+      "source_location": "L47",
+      "weight": 1.0
+    },
+    {
+      "source": "changes_graphify_community_map",
+      "target": "ssis2dbt_convert_components_converter",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "converter()",
+      "source_file": "CHANGES.md",
+      "source_location": "L47",
+      "weight": 1.0
+    },
+    {
+      "source": "changes_graphify_community_map",
+      "target": "ssis2dbt_convert_generator_generate_model",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "generate_model()",
+      "source_file": "CHANGES.md",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
       "source": "ssis2dbt_convert_components_select_cols",
       "target": "ssis2dbt_ir_model_column",
       "relation": "uses",
@@ -11099,6 +11725,30 @@
       "source_file": "ssis2dbt/convert/generator.py",
       "source_location": "L51",
       "weight": 0.8
+    },
+    {
+      "source": "changes_new_files",
+      "target": "ssis2dbt_dialects_base_get_dialect",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "get_dialect",
+      "source_file": "CHANGES.md",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "changes_graphify_community_map",
+      "target": "ssis2dbt_dialects_base_get_dialect",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "get_dialect()",
+      "source_file": "CHANGES.md",
+      "source_location": "L51",
+      "weight": 1.0
     },
     {
       "source": "ssis2dbt_convert_components_aggregate",
@@ -11689,6 +12339,18 @@
       "weight": 0.8
     },
     {
+      "source": "changes_graphify_community_map",
+      "target": "ssis2dbt_convert_expression_translate",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "context": "translate()",
+      "source_file": "CHANGES.md",
+      "source_location": "L51",
+      "weight": 1.0
+    },
+    {
       "source": "ssis_to_dbt_migration_engine_prd_6_1_dialect_translation_examples_proposed",
       "target": "ssis2dbt_dialects_base_dialect_try_cast",
       "relation": "references",
@@ -11944,5 +12606,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "d5e0f57434ee06bba2ab2e6f636bac2520a07260"
+  "built_at_commit": "d34ed3da708474b72f8933893a70dc8476bd534b"
 }
