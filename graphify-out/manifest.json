@@ -42,21 +42,21 @@
     "semantic_hash": ""
   },
   "ssis2dbt/convert/components.py": {
-    "mtime": 1790744420.5564592,
-    "seen": 1790744507.174524,
-    "ast_hash": "f9f1958d6dfb17218e9e3e34eddd4e34",
+    "mtime": 1790791132.1840541,
+    "seen": 1790791252.1545727,
+    "ast_hash": "1230b4b9daf235a4f51bdd77a1a7588a",
     "semantic_hash": ""
   },
   "ssis2dbt/convert/expression.py": {
-    "mtime": 1790717594.257893,
-    "seen": 1790717930.9376345,
-    "ast_hash": "217c8cc202a657cdf16aad890f726d56",
+    "mtime": 1790771231.471547,
+    "seen": 1790771264.3213222,
+    "ast_hash": "44050ea44d9efe47040fe072e1ed61a3",
     "semantic_hash": ""
   },
   "ssis2dbt/convert/generator.py": {
-    "mtime": 1790744439.86071,
-    "seen": 1790744507.174524,
-    "ast_hash": "220857d007a5412349e815414775b9c3",
+    "mtime": 1790791151.7885923,
+    "seen": 1790791252.1545727,
+    "ast_hash": "beed4ef1e17a2d55c9ba5666625a9b53",
     "semantic_hash": ""
   },
   "ssis2dbt/dialects/__init__.py": {
@@ -78,9 +78,9 @@
     "semantic_hash": ""
   },
   "ssis2dbt/engine.py": {
-    "mtime": 1790717705.919641,
-    "seen": 1790717930.9376345,
-    "ast_hash": "e21fa03fe63556ca02fab8385968dac4",
+    "mtime": 1790791183.2599323,
+    "seen": 1790791252.1545727,
+    "ast_hash": "4d290fe5c9f3ecf77bdcc9f516db6d1a",
     "semantic_hash": ""
   },
   "ssis2dbt/export/__init__.py": {
@@ -102,9 +102,9 @@
     "semantic_hash": ""
   },
   "ssis2dbt/grade/reasons.py": {
-    "mtime": 1790717611.7176616,
-    "seen": 1790717930.9376345,
-    "ast_hash": "f5ab72c1bf83330204e4503ae45915b4",
+    "mtime": 1790753880.3949437,
+    "seen": 1790753988.2337193,
+    "ast_hash": "4e689366081e3b6fdd578923dd2c7342",
     "semantic_hash": ""
   },
   "ssis2dbt/ir/__init__.py": {
@@ -114,9 +114,9 @@
     "semantic_hash": ""
   },
   "ssis2dbt/ir/model.py": {
-    "mtime": 1790744255.461672,
-    "seen": 1790744507.174524,
-    "ast_hash": "2d79cd7fb7a45ef89d38b1e8d7f1fb2a",
+    "mtime": 1790791910.211228,
+    "seen": 1790792076.6987627,
+    "ast_hash": "606d4baa0efb7c4a915538afbd52dfe3",
     "semantic_hash": ""
   },
   "ssis2dbt/parser/__init__.py": {
@@ -126,9 +126,9 @@
     "semantic_hash": ""
   },
   "ssis2dbt/parser/dtsx.py": {
-    "mtime": 1790744277.7820623,
-    "seen": 1790744507.174524,
-    "ast_hash": "a61cbc69088e9c6e201d0c1081d70dc9",
+    "mtime": 1790791922.348384,
+    "seen": 1790792076.6987627,
+    "ast_hash": "5e6cd933fac4a5d311d97512f8fc81f6",
     "semantic_hash": ""
   },
   "ssis2dbt/parser/redact.py": {
@@ -144,9 +144,9 @@
     "semantic_hash": ""
   },
   "ssis2dbt/ui/app.py": {
-    "mtime": 1790743616.1239052,
-    "seen": 1790743644.3666975,
-    "ast_hash": "fa6ccbe62555514e8e4113d5e049730b",
+    "mtime": 1790791999.5559275,
+    "seen": 1790792076.6987627,
+    "ast_hash": "256e5e0a82f1fb2d6126027b99995f1a",
     "semantic_hash": ""
   },
   "tests/test_engine.py": {
@@ -195,6 +195,30 @@
     "mtime": 1790744638.8756125,
     "seen": 1790744886.37425,
     "ast_hash": "8900385c971aca27a722f80e3cbffbb3",
+    "semantic_hash": ""
+  },
+  "tests/_expr_smoke.py": {
+    "mtime": 1790753923.185201,
+    "seen": 1790753988.2337193,
+    "ast_hash": "1825154bfbcaec7b4362738f18dbac96",
+    "semantic_hash": ""
+  },
+  ".claude/settings.local.json": {
+    "mtime": 1790757232.1724467,
+    "seen": 1790757417.8600507,
+    "ast_hash": "25081c79b6d41334775d29f7d15db003",
+    "semantic_hash": ""
+  },
+  "examples/Package 1.txt": {
+    "mtime": 1790767476.7194655,
+    "seen": 1790767645.3321328,
+    "ast_hash": "ed984461a55e91a5ac2cc2ce09cdb3e2",
+    "semantic_hash": ""
+  },
+  "ssis2dbt/ui/cf_diagram.py": {
+    "mtime": 1790791987.2135522,
+    "seen": 1790792076.6987627,
+    "ast_hash": "72d1a5a99267f1f0c01e91666f8ea396",
     "semantic_hash": ""
   }
 }
