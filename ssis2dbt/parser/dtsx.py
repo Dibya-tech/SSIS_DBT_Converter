@@ -150,7 +150,9 @@ def _parse_executables(root, pkg: Package) -> None:
     container = root.find(_q("Executables"))
     if container is None:
         return
-    _walk_executables(container, pkg)
+    # Pass root as scope so _parse_precedence can find PrecedenceConstraints
+    # which lives at the Package/container level, not inside <Executables>.
+    _walk_executables(container, pkg, scope=root)
 
 
 _SQLTASK_NS = "www.microsoft.com/sqlserver/dts/tasks/sqltask"
@@ -168,9 +170,15 @@ def _read_sql_task(ex, task: Task) -> None:
             break
 
 
-def _walk_executables(container, pkg: Package, parent_id: str | None = None) -> None:
+def _walk_executables(
+    container, pkg: Package, parent_id: str | None = None, scope=None
+) -> None:
     """Recursively walk a DTS:Executables element, discovering DataFlow tasks at
-    any nesting depth (e.g. inside ForEachLoop / Sequence containers)."""
+    any nesting depth (e.g. inside ForEachLoop / Sequence containers).
+
+    ``scope`` is the outer Package or container element that holds both the
+    <Executables> block and the sibling <PrecedenceConstraints> block.
+    """
     for ex in container.findall(_q("Executable")):
         etype = _attr(ex, "ExecutableType", "") or ""
         task_type = _classify(etype, _TASK_MAP, "UnknownTask")
@@ -187,30 +195,39 @@ def _walk_executables(container, pkg: Package, parent_id: str | None = None) -> 
                 pkg.data_flows.append(df)
         elif task_type == "ExecuteSQLTask":
             _read_sql_task(ex, task)
-        # Recurse into any nested Executables block (ForEach/Sequence/etc.)
+        # Recurse into nested Executables (ForEach/Sequence/etc.).
+        # Pass `ex` as the scope so inner PrecedenceConstraints are found on it.
         nested = ex.find(_q("Executables"))
         if nested is not None:
-            _walk_executables(nested, pkg, parent_id=task.id)
-    _parse_precedence(container, pkg)
+            _walk_executables(nested, pkg, parent_id=task.id, scope=ex)
+    _parse_precedence(container, pkg, scope=scope)
 
 
-def _parse_precedence(container, pkg: Package) -> None:
-    """Resolve precedence constraints into upstream-task edges."""
-    id_by_ref = {}
+def _parse_precedence(container, pkg: Package, scope=None) -> None:
+    """Resolve precedence constraints into upstream-task id edges.
+
+    PrecedenceConstraints live on the *outer* Package/container element (scope),
+    not inside the <Executables> child element we iterate over.
+    """
+    # Build refId -> DTSID map from direct children of the Executables block
+    id_by_ref: dict[str, str] = {}
     for ex in container.findall(_q("Executable")):
         ref = _attr(ex, "refId")
         did = _attr(ex, "DTSID", ref)
         if ref:
             id_by_ref[ref] = did
-    pcs = container.find(_q("PrecedenceConstraints"))
+
+    # PrecedenceConstraints is a sibling of <Executables>, so look on scope
+    pcs_parent = scope if scope is not None else container
+    pcs = pcs_parent.find(_q("PrecedenceConstraints"))
     if pcs is None:
         return
     task_by_id = {t.id: t for t in pkg.tasks}
     for pc in pcs.findall(_q("PrecedenceConstraint")):
         frm = _attr(pc, "From")
-        to = _attr(pc, "To")
+        to  = _attr(pc, "To")
         frm_id = id_by_ref.get(frm, frm)
-        to_id = id_by_ref.get(to, to)
+        to_id  = id_by_ref.get(to,  to)
         if to_id in task_by_id and frm_id:
             task_by_id[to_id].precedence.append(frm_id)
 

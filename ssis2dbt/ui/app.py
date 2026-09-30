@@ -26,8 +26,8 @@ from ssis2dbt.engine import ConversionRun, convert_package
 from ssis2dbt.export.project import build_project_files
 from ssis2dbt.ir.model import Grade
 from ssis2dbt.parser import dtsx
-from ssis2dbt.ui.cf_diagram import build_cf_graph_data, render_cf_html
-from ssis2dbt.ui.flow_diagram import render_html
+from ssis2dbt.ui.cf_diagram import build_cf_graph_data, render_cf_html  # noqa: F401
+from ssis2dbt.ui.flow_diagram import build_graph_data, render_html  # noqa: F401
 
 # ---------------------------------------------------------------------------
 st.set_page_config(page_title="SSIS → dbt", layout="wide",
@@ -144,29 +144,22 @@ with left_col:
     st.markdown("#### SSIS package")
     st.caption(f"📄 {uploaded.name}  ·  dialect: **{dialect}**")
 
-    # Control flow diagram (task execution order + containers)
-    with st.expander("🔄 Control Flow", expanded=True):
-        cf_gd  = build_cf_graph_data(pkg)
-        cf_h   = min(max(int(cf_gd["height"]) + 40, 180), 800)
+    # All flow diagrams (control flow + each data flow) in one tabbed card
+    df_list = pkg.data_flows
+    tab_labels = ["🔄 Control Flow"] + [df.name for df in df_list]
+    all_tabs = st.tabs(tab_labels)
+
+    with all_tabs[0]:
+        cf_gd = build_cf_graph_data(pkg)
+        cf_h  = min(max(int(cf_gd["height"]) + 40, 220), 900)
         components.html(render_cf_html(pkg), height=cf_h, scrolling=True)
 
-    st.markdown("<hr style='border-color:#21262d;margin:8px 0'/>",
-                unsafe_allow_html=True)
-
-    # One flow-diagram tab per data flow
-    df_list = pkg.data_flows
-    if df_list:
-        df_tabs = st.tabs([df.name for df in df_list])
-        for tab, df in zip(df_tabs, df_list):
-            with tab:
-                diagram_html = render_html(df, result_by_df.get(df.id, []))
-                # derive canvas size from graph data
-                from ssis2dbt.ui.flow_diagram import build_graph_data
-                gd = build_graph_data(df, result_by_df.get(df.id, []))
-                h = min(max(gd["height"] + 60, 220), 700)
-                components.html(diagram_html, height=h, scrolling=True)
-    else:
-        st.info("No data flows found in this package.")
+    for tab, df in zip(all_tabs[1:], df_list):
+        with tab:
+            gd = build_graph_data(df, result_by_df.get(df.id, []))
+            h  = min(max(int(gd["height"]) + 60, 220), 700)
+            components.html(render_html(df, result_by_df.get(df.id, [])),
+                            height=h, scrolling=True)
 
     # Control-flow tasks (manual) listed below the diagram
     manual = run.manual_tasks()
