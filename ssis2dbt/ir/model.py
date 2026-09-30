@@ -48,6 +48,10 @@ class Component:
     properties: dict = field(default_factory=dict)
     description: str = ""   # SSIS component description attribute
     output_conditions: dict = field(default_factory=dict)  # ConditionalSplit: output_name -> ssis_expr
+    # Lookup / MergeJoin join pairs: (left_or_input_col, right_or_reference_col)
+    join_keys: list = field(default_factory=list)
+    # DerivedColumn in-place replacements: (col_name, ssis_expression)
+    readwrite_exprs: list = field(default_factory=list)
 
     @property
     def safe_name(self) -> str:
@@ -101,6 +105,7 @@ class Variable:
     namespace: str = "User"
     value: Optional[str] = None
     is_parameter: bool = False
+    id: str = ""  # DTSID, e.g. {25CA141E-...}, used for ParameterMapping resolution
 
 
 @dataclass

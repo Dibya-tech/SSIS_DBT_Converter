@@ -121,7 +121,8 @@ def _parse_variables(root, pkg: Package) -> None:
         value = value_el.text if value_el is not None else None
         pkg.variables.append(
             Variable(name=vname, namespace=ns, value=value,
-                     is_parameter=(ns or "").lower() == "project")
+                     is_parameter=(ns or "").lower() == "project",
+                     id=_attr(v, "DTSID", ""))
         )
 
 
@@ -190,7 +191,7 @@ def _walk_executables(
         )
         pkg.tasks.append(task)
         if task_type == "DataFlowTask":
-            df = _parse_pipeline(ex, task)
+            df = _parse_pipeline(ex, task, pkg)
             if df is not None:
                 pkg.data_flows.append(df)
         elif task_type == "ExecuteSQLTask":
@@ -232,7 +233,42 @@ def _parse_precedence(container, pkg: Package, scope=None) -> None:
             task_by_id[to_id].precedence.append(frm_id)
 
 
-def _parse_pipeline(executable, task: Task) -> DataFlow | None:
+def _resolve_param_sql(sql: str, param_map_str: str, var_by_id: dict) -> str:
+    """Replace ? placeholders in SQL with Jinja vars or SQL equivalents."""
+    if "?" not in sql or not param_map_str:
+        return sql
+    import re as _re
+    ordered: dict[int, str] = {}
+    for entry in param_map_str.split(";"):
+        entry = entry.strip().strip('"')
+        if not entry or "," not in entry:
+            continue
+        comma_idx = entry.index(",")
+        idx_part = entry[:comma_idx].strip().strip('"')
+        ref = entry[comma_idx + 1:].strip()
+        m = _re.match(r"Parameter(\d+)", idx_part, _re.I)
+        if not m:
+            continue
+        idx = int(m.group(1))
+        if ref.startswith("System::"):
+            sys_var = ref.split("::", 1)[1].lower()
+            ordered[idx] = "current_timestamp()" if sys_var == "starttime" else f"/* {ref} */"
+        elif ref in var_by_id:
+            ordered[idx] = "{{{{ var('{}') }}}}".format(var_by_id[ref])
+        else:
+            ordered[idx] = f"/* parameter {idx} */"
+    result = []
+    q_idx = 0
+    for ch in sql:
+        if ch == "?":
+            result.append(ordered.get(q_idx, "?"))
+            q_idx += 1
+        else:
+            result.append(ch)
+    return "".join(result)
+
+
+def _parse_pipeline(executable, task: Task, pkg=None) -> DataFlow | None:
     obj = executable.find(_q("ObjectData"))
     if obj is None:
         return None
@@ -240,6 +276,13 @@ def _parse_pipeline(executable, task: Task) -> DataFlow | None:
     if pipeline is None:
         return None
     df = DataFlow(id=task.id, name=task.name)
+
+    # Build GUID -> variable name map for ParameterMapping resolution
+    var_by_id: dict[str, str] = {}
+    if pkg is not None:
+        for v in pkg.variables:
+            if v.id:
+                var_by_id[v.id] = v.name
 
     comps_el = pipeline.find("components")
     ref_to_id: dict[str, str] = {}
@@ -269,6 +312,62 @@ def _parse_pipeline(executable, task: Task) -> DataFlow | None:
                         for prop in out.findall("properties/property"):
                             if prop.get("name") == "FriendlyExpression":
                                 component.output_conditions[oname] = (prop.text or "").strip()
+
+            # Lookup: parse JoinToReferenceColumn from inputColumn properties
+            if ctype == "Lookup":
+                for inp_el in comp.findall("inputs/input"):
+                    for ic in inp_el.findall("inputColumns/inputColumn"):
+                        col_name = ic.get("cachedName", ic.get("name", ""))
+                        for prop in ic.findall("properties/property"):
+                            if prop.get("name") == "JoinToReferenceColumn" and prop.text:
+                                if col_name:
+                                    component.join_keys.append((col_name, prop.text.strip()))
+
+            # MergeJoin: match input columns by cachedSortKeyPosition across both inputs
+            elif ctype == "MergeJoin":
+                inputs = comp.findall("inputs/input")
+                if len(inputs) >= 2:
+                    left_keys: dict[int, str] = {}
+                    right_keys: dict[int, str] = {}
+                    for ic in inputs[0].findall("inputColumns/inputColumn"):
+                        pos_raw = ic.get("cachedSortKeyPosition")
+                        if pos_raw:
+                            try:
+                                pos = int(pos_raw)
+                                if pos > 0:
+                                    left_keys[pos] = ic.get("cachedName", ic.get("name", ""))
+                            except ValueError:
+                                pass
+                    for ic in inputs[1].findall("inputColumns/inputColumn"):
+                        pos_raw = ic.get("cachedSortKeyPosition")
+                        if pos_raw:
+                            try:
+                                pos = int(pos_raw)
+                                if pos > 0:
+                                    right_keys[pos] = ic.get("cachedName", ic.get("name", ""))
+                            except ValueError:
+                                pass
+                    for kpos in sorted(left_keys):
+                        if kpos in right_keys:
+                            component.join_keys.append((left_keys[kpos], right_keys[kpos]))
+
+            # DerivedColumn: capture readWrite in-place replacement expressions
+            elif ctype == "DerivedColumn":
+                for inp_el in comp.findall("inputs/input"):
+                    for ic in inp_el.findall("inputColumns/inputColumn"):
+                        if ic.get("usageType") == "readWrite":
+                            col_name = ic.get("cachedName", ic.get("name", ""))
+                            for prop in ic.findall("properties/property"):
+                                if prop.get("name") == "Expression" and prop.text and col_name:
+                                    component.readwrite_exprs.append((col_name, prop.text.strip()))
+
+            # OLEDBSource: resolve ? parameters in SqlCommand using ParameterMapping
+            elif ctype in ("OLEDBSource", "ADONETSource"):
+                sql_cmd = component.properties.get("SqlCommand", "")
+                param_map = component.properties.get("ParameterMapping", "")
+                if "?" in sql_cmd and param_map:
+                    resolved = _resolve_param_sql(sql_cmd, param_map, var_by_id)
+                    component.properties["SqlCommand"] = resolved
 
             df.components.append(component)
             ref_to_id[cid] = cid

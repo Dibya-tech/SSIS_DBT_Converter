@@ -41,6 +41,7 @@ _DT_CAST = {
     "DT_DBDATE":      "date",
     "DT_DBTIMESTAMP": "timestamp",
     "DT_DBTIMESTAMPOFFSET": "timestamp_tz",
+    "DT_CY":          "numeric(19,4)",
     "DT_GUID":        "varchar(36)",
     "DT_BYTES":       "binary",
     "DT_IMAGE":       "binary",

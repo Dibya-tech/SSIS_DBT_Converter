@@ -48,6 +48,7 @@ _SSIS_TO_SQL: dict[str, str] = {
     "guid": "varchar(36)",
     "bytes": "binary",
     "image": "binary",
+    "cy": "numeric(19,4)",
 }
 
 
@@ -168,12 +169,36 @@ def _first_up(ctx: Ctx) -> str:
 def _oledb_source(comp: Component, ctx: Ctx) -> CTEResult:
     src = ctx.source_ref(comp)
     col_sql = _select_cols(comp.columns)
-    desc = _cte_desc(comp, [
-        f"Source table/query: {comp.properties.get('OpenRowset') or comp.properties.get('SqlCommand') or 'unknown'}",
-        f"Columns: {len(comp.columns)}",
-    ])
-    body = f"{desc}\n    select\n{col_sql}\n    from {src}"
-    return CTEResult(body=body)
+    sql_cmd = comp.properties.get("SqlCommand") or comp.properties.get("OpenRowset") or "unknown"
+    grade = Grade.EXACT
+    reason = None
+    extra_lines = [f"Columns: {len(comp.columns)}"]
+
+    # Extract and include WHERE clause from parameterized SqlCommand
+    where_clause = ""
+    if "?" not in sql_cmd:  # already resolved, or no params
+        where_match = re.search(r"\bWHERE\b(.+?)(?:\s*(?:GROUP\s+BY|ORDER\s+BY|HAVING|$))", sql_cmd, re.I | re.S)
+        if where_match:
+            where_clause = re.sub(r"\b[a-zA-Z_]\w*\.", "", where_match.group(1).strip())
+    else:
+        # Still has unresolved ? — surface the raw WHERE as a comment
+        where_match = re.search(r"\bWHERE\b(.+?)(?:\s*(?:GROUP\s+BY|ORDER\s+BY|HAVING|$))", sql_cmd, re.I | re.S)
+        if where_match:
+            extra_lines.append(f"⚠️  Unresolved WHERE: {where_match.group(1).strip()[:200]}")
+            grade = Grade.WARNING
+            reason = "PARAM_UNRESOLVED"
+
+    if "{{ var(" in sql_cmd:
+        extra_lines.append("Parameterized query: ? replaced with Jinja vars — verify var names")
+        grade = Grade.WARNING
+        reason = "PARAM_SUBST"
+
+    desc = _cte_desc(comp, extra_lines)
+    if where_clause:
+        body = f"{desc}\n    select\n{col_sql}\n    from {src}\n    where {where_clause}"
+    else:
+        body = f"{desc}\n    select\n{col_sql}\n    from {src}"
+    return CTEResult(body=body, grade=grade, reason_code=reason)
 
 
 @converter("FlatFileSource", "ExcelSource")
@@ -223,14 +248,19 @@ def _file_dest(comp: Component, ctx: Ctx) -> CTEResult:
 
 @converter("DerivedColumn")
 def _derived(comp: Component, ctx: Ctx) -> CTEResult:
-    exprs = _derived_expressions(comp)
-    desc_lines = [f"Adds/replaces {len(exprs)} column(s) via SSIS expressions"]
+    # New outputColumn expressions (adds new columns)
+    new_exprs = _derived_expressions(comp)
+    # In-place readWrite replacements (replaces existing columns)
+    rw_exprs = comp.readwrite_exprs  # list of (col_name, ssis_expr)
+
+    total = len(new_exprs) + len(rw_exprs)
+    desc_lines = [f"Adds/replaces {total} column(s) via SSIS expressions"]
     grade = Grade.EXACT
     reason = None
     notes: list[str] = []
     new_cols: list[str] = []
 
-    for col_name, ssis_expr in exprs:
+    for col_name, ssis_expr in new_exprs:
         res = translate_expr(ssis_expr, ctx.dialect)
         alias = sanitize_identifier(col_name)
         if res.confident:
@@ -242,13 +272,44 @@ def _derived(comp: Component, ctx: Ctx) -> CTEResult:
             notes.append(f"{alias}: {res.note}")
             new_cols.append(f"    -- REVIEW: {res.note}\n    {res.sql} as {alias}")
 
+    rw_cols: list[str] = []
+    rw_names: list[str] = []
+    for col_name, ssis_expr in rw_exprs:
+        res = translate_expr(ssis_expr, ctx.dialect)
+        alias = sanitize_identifier(col_name)
+        rw_names.append(alias)
+        if res.confident:
+            ssis_tag = f"  -- SSIS: {res.origin}" if res.origin else ""
+            rw_cols.append(f"    {res.sql} as {alias}{ssis_tag}")
+        else:
+            if grade == Grade.EXACT:
+                grade = Grade.WARNING
+            reason = "UNMAPPED_FUNCTION"
+            notes.append(f"{alias}: {res.note}")
+            rw_cols.append(f"    -- REVIEW: {res.note}\n    {res.sql} as {alias}")
+
     desc = _cte_desc(comp, desc_lines)
-    if new_cols:
+    upstream = _first_up(ctx)
+
+    if rw_cols and not new_cols:
+        # Pure in-place replacement: use * EXCLUDE to drop replaced cols, then emit new exprs
+        exclude_list = ", ".join(rw_names)
+        body = (f"{desc}\n    select\n    * exclude ({exclude_list}),\n"
+                + ",\n".join(rw_cols)
+                + f"\n    from {upstream}")
+    elif rw_cols and new_cols:
+        exclude_list = ", ".join(rw_names)
+        body = (f"{desc}\n    select\n    * exclude ({exclude_list}),\n"
+                + ",\n".join(rw_cols)
+                + ",\n"
+                + ",\n".join(new_cols)
+                + f"\n    from {upstream}")
+    elif new_cols:
         body = (f"{desc}\n    select\n    *,\n"
                 + ",\n".join(new_cols)
-                + f"\n    from {_first_up(ctx)}")
+                + f"\n    from {upstream}")
     else:
-        body = f"{desc}\n    select * from {_first_up(ctx)}"
+        body = f"{desc}\n    select * from {upstream}"
 
     return CTEResult(body=body, grade=grade, reason_code=reason, notes=notes)
 
@@ -293,14 +354,26 @@ def _lookup(comp: Component, ctx: Ctx) -> CTEResult:
     ref = ctx.ref_lookup(comp)
     no_match = (comp.properties.get("NoMatchBehavior", "") or "").lower()
     join = "inner join" if "fail" in no_match else "left join"
-    desc = _cte_desc(comp, [
-        f"Join type: {join.upper()} (no-match: {no_match or 'redirect'})",
-        "⚠️  Verify join keys below",
-    ])
+
+    if comp.join_keys:
+        on_clause = " and ".join(
+            f"u.{sanitize_identifier(lk)} = l.{sanitize_identifier(rk)}"
+            for lk, rk in comp.join_keys
+        )
+        grade = Grade.EXACT
+        review = None
+        desc_extra = [f"Join type: {join.upper()} (no-match: {no_match or 'redirect'})"]
+    else:
+        on_clause = "/* REVIEW: add join keys here */ 1 = 1"
+        grade = Grade.WARNING
+        review = "Lookup join keys not found — add ON clause manually"
+        desc_extra = [f"Join type: {join.upper()} (no-match: {no_match or 'redirect'})", "⚠️  Verify join keys below"]
+
+    desc = _cte_desc(comp, desc_extra)
     body = (f"{desc}\n"
             f"    select u.*\n    from {_first_up(ctx)} u\n"
-            f"    {join} {ref} l\n        on /* REVIEW: add join keys here */ 1 = 1")
-    return CTEResult(body=body, review_comment="Verify lookup join keys")
+            f"    {join} {ref} l\n        on {on_clause}")
+    return CTEResult(body=body, grade=grade, review_comment=review)
 
 
 @converter("Sort")
@@ -392,11 +465,26 @@ def _merge_join(comp: Component, ctx: Ctx) -> CTEResult:
     left, right = ctx.upstreams[0], ctx.upstreams[1]
     jt = (comp.properties.get("JoinType", "") or "").lower()
     join = {"1": "left join", "2": "inner join", "3": "full outer join"}.get(jt, "inner join")
-    desc = _cte_desc(comp, [f"Join type: {join.upper()} — verify keys below"])
+
+    if comp.join_keys:
+        on_clause = " and ".join(
+            f"l.{sanitize_identifier(lk)} = r.{sanitize_identifier(rk)}"
+            for lk, rk in comp.join_keys
+        )
+        grade = Grade.EXACT
+        review = None
+        desc_extra = [f"Join type: {join.upper()}"]
+    else:
+        on_clause = "/* REVIEW: add join keys here */ 1 = 1"
+        grade = Grade.WARNING
+        review = "MergeJoin keys not found — add ON clause manually"
+        desc_extra = [f"Join type: {join.upper()} — verify keys below"]
+
+    desc = _cte_desc(comp, desc_extra)
     body = (f"{desc}\n"
             f"    select l.*, r.*\n    from {left} l\n    {join} {right} r\n"
-            f"        on /* REVIEW: add join keys here */ 1 = 1")
-    return CTEResult(body=body, review_comment="Verify merge-join keys")
+            f"        on {on_clause}")
+    return CTEResult(body=body, grade=grade, review_comment=review)
 
 
 @converter("Merge")

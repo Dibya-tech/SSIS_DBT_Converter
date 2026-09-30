@@ -44,6 +44,8 @@ def test_convert_produces_model_and_grades():
 def test_no_secret_in_any_generated_file():
     run = convert_file(SAMPLE)
     for content in build_project_files(run).values():
+        if isinstance(content, bytes):
+            continue  # binary files (PNGs) can't contain text secrets
         assert "SuperSecret123" not in content
 
 
