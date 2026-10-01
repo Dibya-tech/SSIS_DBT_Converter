@@ -5,7 +5,7 @@
   "3": "components.py",
   "4": "CLAUDE.md",
   "5": "Dialect",
-  "6": "engine.py",
+  "6": "Grade",
   "7": "test_engine.py",
   "8": "Product Requirements Document (PRD): SSIS to dbt Migration Engine",
   "9": "9. Export Architecture & dbt Project Generation",
@@ -23,8 +23,9 @@
   "21": "grade/__init__.py",
   "22": "ir/__init__.py",
   "23": "ui/__init__.py",
-  "24": "6. Target Dialect Support",
-  "25": "SSIS to dbt Migration Engine",
+  "24": "json",
+  "25": "SSIS → dbt Migration Engine",
   "26": "cf_diagram.py",
-  "27": "Session 2026-09-30 — Initial build + column & UI improvements"
+  "27": "New files",
+  "28": "DataFlow"
 }

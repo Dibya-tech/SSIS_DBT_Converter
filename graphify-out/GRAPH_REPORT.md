@@ -1,17 +1,17 @@
-# Graph Report - DBT_SSIS_COnverter  (2026-09-30)
+# Graph Report - DBT_SSIS_COnverter  (2026-10-01)
 
 ## Corpus Check
-- 34 files · ~26,195 words
+- 34 files · ~19,469 words
 - Verdict: corpus is large enough that graph structure adds value.
-- Unclassified: 12 file(s) not represented in the graph (top: .dtsx 10, (none) 2)
+- Unclassified: 13 file(s) not represented in the graph (top: .dtsx 10, (none) 2, .zip 1)
 
 ## Summary
-- 347 nodes · 794 edges · 28 communities (21 shown, 7 thin omitted)
-- Extraction: 86% EXTRACTED · 14% INFERRED · 0% AMBIGUOUS · INFERRED: 112 edges (avg confidence: 0.94)
+- 367 nodes · 829 edges · 29 communities (21 shown, 8 thin omitted)
+- Extraction: 86% EXTRACTED · 14% INFERRED · 0% AMBIGUOUS · INFERRED: 114 edges (avg confidence: 0.94)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `63f6937e`
+- Built from commit: `759bc3d4`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -22,7 +22,7 @@
 - components.py
 - CLAUDE.md
 - Dialect
-- engine.py
+- Grade
 - test_engine.py
 - Product Requirements Document (PRD): SSIS to dbt Migration Engine
 - 9. Export Architecture & dbt Project Generation
@@ -34,10 +34,10 @@
 - 5. SSIS Component to SQL Mapping Reference _(Proposed)_
 - 17. Appendix
 - 3. Personas & Key User Journeys _(Proposed)_
-- 6. Target Dialect Support
-- SSIS to dbt Migration Engine
+- SSIS → dbt Migration Engine
 - cf_diagram.py
-- Session 2026-09-30 — Initial build + column & UI improvements
+- New files
+- DataFlow
 
 ## God Nodes (most connected - your core abstractions)
 1. `Component` - 36 edges
@@ -48,53 +48,53 @@
 6. `CTEResult` - 23 edges
 7. `Dialect` - 23 edges
 8. `converter()` - 22 edges
-9. `sanitize_identifier()` - 21 edges
-10. `SSIS to DBT converter` - 20 edges
+9. `build_project_files()` - 22 edges
+10. `sanitize_identifier()` - 21 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `Graphify community map` --references--> `CTEResult`  [INFERRED]
+  CHANGES.md → ssis2dbt/convert/components.py
+- `Graphify community map` --references--> `Ctx`  [INFERRED]
+  CHANGES.md → ssis2dbt/convert/components.py
+- `Graphify community map` --references--> `converter()`  [INFERRED]
+  CHANGES.md → ssis2dbt/convert/components.py
+- `Graphify community map` --references--> `convert_component()`  [INFERRED]
+  CHANGES.md → ssis2dbt/convert/components.py
 - `Graphify community map` --references--> `translate()`  [INFERRED]
   CHANGES.md → ssis2dbt/convert/expression.py
-- `Graphify community map` --references--> `GeneratedModel`  [INFERRED]
-  CHANGES.md → ssis2dbt/convert/generator.py
-- `Graphify community map` --references--> `generate_model()`  [INFERRED]
-  CHANGES.md → ssis2dbt/convert/generator.py
-- `Graphify community map` --references--> `Dialect`  [INFERRED]
-  CHANGES.md → ssis2dbt/dialects/base.py
-- `New files` --references--> `Dialect`  [INFERRED]
-  CHANGES.md → ssis2dbt/dialects/base.py
 
 ## Import Cycles
 - None detected.
 
-## Communities (28 total, 7 thin omitted)
+## Communities (29 total, 8 thin omitted)
 
 ### Community 0 - "SSIS to DBT converter"
 Cohesion: 0.07
 Nodes (28): 1. Heavy Control Flow — What This Means for the Tool, 2. Your Architecture — What This Changes, 3. One Folder Per DTSX, One Model Per Flow, 4. Web UI — Let's Think About What It Needs, Assistant, Assistant, Assistant, Assistant (+20 more)
 
 ### Community 1 - "app.py"
-Cohesion: 0.11
-Nodes (24): csv, io, pathlib, ConversionRun, build_project_files(), _dbt_project_yml(), _profiles_example(), Export a ConversionRun into a deployable dbt project (PRD section 9). (+16 more)
+Cohesion: 0.07
+Nodes (27): build_parser(), _cmd_convert(), _cmd_inspect(), main(), route_layer(), available(), _build_cf_warnings(), ConversionRun (+19 more)
 
 ### Community 2 - "dtsx.py"
-Cohesion: 0.15
-Nodes (31): FsPath, Column, ConnectionManager, Package, Task, Variable, _attr(), _classify() (+23 more)
+Cohesion: 0.13
+Nodes (24): Column, ConnectionManager, Package, Task, Variable, _attr(), _classify(), _parse_connections() (+16 more)
 
 ### Community 3 - "components.py"
-Cohesion: 0.18
-Nodes (44): Graphify community map, _aggregate(), _col_alias(), _conditional_split(), convert_component(), converter(), _cte_desc(), CTEResult (+36 more)
+Cohesion: 0.20
+Nodes (31): _aggregate(), _col_alias(), _conditional_split(), convert_component(), converter(), _cte_desc(), CTEResult, Ctx (+23 more)
 
 ### Community 5 - "Dialect"
-Cohesion: 0.07
-Nodes (19): argparse, ArgumentParser, build_parser(), _cmd_convert(), _cmd_inspect(), main(), Command-line interface for the SSIS-to-dbt Migration Engine. Examples: python…, available() (+11 more)
+Cohesion: 0.08
+Nodes (8): Dialect, register(), Databricks, Snowflake, TSQL, 6.1 Dialect Translation Examples _(Proposed)_, 6.2 SSIS Expression Language Translation _(Proposed)_, 6. Target Dialect Support
 
-### Community 6 - "engine.py"
-Cohesion: 0.09
-Nodes (35): New files, dataclasses, Enum, ComponentResult, _default_model_name(), generate_model(), GeneratedModel, Generate a dbt model (chained CTEs) from a Data Flow (PRD section 4). Design… (+27 more)
+### Community 6 - "Grade"
+Cohesion: 0.13
+Nodes (13): Graphify community map, ComponentResult, _default_model_name(), generate_model(), GeneratedModel, _ref_lookup(), _source_ref(), _topo_order() (+5 more)
 
 ### Community 7 - "test_engine.py"
-Cohesion: 0.09
-Nodes (28): parametrize, pytest, re, _col(), ExprResult, Translate the SSIS expression language into SQL (PRD section 6.2). SSIS…, Normalize a [Column Name] or bare column into a SQL identifier., Convert cond ? a : b into case when cond then a else b end. Handles a single… (+20 more)
+Cohesion: 0.12
+Nodes (14): _col(), ExprResult, translate(), _cast_repl(), _translate_ternary(), get_dialect(), is_sensitive_key(), redact_properties() (+6 more)
 
 ### Community 8 - "Product Requirements Document (PRD): SSIS to dbt Migration Engine"
 Cohesion: 0.18
@@ -136,34 +136,34 @@ Nodes (3): 17.1 Glossary, 17.2 Change Log, 17. Appendix
 Cohesion: 0.67
 Nodes (3): 3.1 Personas, 3.2 Primary Journey, 3. Personas & Key User Journeys _(Proposed)_
 
-### Community 24 - "6. Target Dialect Support"
-Cohesion: 0.50
-Nodes (3): 6.1 Dialect Translation Examples _(Proposed)_, 6.2 SSIS Expression Language Translation _(Proposed)_, 6. Target Dialect Support
-
-### Community 25 - "SSIS to dbt Migration Engine"
-Cohesion: 0.25
-Nodes (7): Architecture, Quick start, SSIS to dbt Migration Engine, Supported dialects, Supported SSIS components, Tests, What it does
+### Community 25 - "SSIS → dbt Migration Engine"
+Cohesion: 0.14
+Nodes (13): Architecture, Dialect, Export (bottom), Knowledge graph, Left pane — SSIS package view, Quick start, Right pane — generated dbt project, Security (+5 more)
 
 ### Community 26 - "cf_diagram.py"
-Cohesion: 0.20
-Nodes (9): collections, json, build_cf_graph_data(), Render a Package's Control Flow as an interactive HTML/SVG diagram. Mirrors the…, Return self-contained HTML string for the control flow diagram., Return id -> topo depth for the given set of task ids., Build a plain-dict graph description for the control flow diagram., render_cf_html() (+1 more)
+Cohesion: 0.18
+Nodes (6): build_cf_graph_data(), render_cf_html(), render_cf_svg(), _topo(), _trunc(), _xe()
 
-### Community 27 - "Session 2026-09-30 — Initial build + column & UI improvements"
-Cohesion: 0.50
-Nodes (3): Change Log, Key design decisions tracked in graphify, Session 2026-09-30 — Initial build + column & UI improvements
+### Community 27 - "New files"
+Cohesion: 0.29
+Nodes (5): Change Log, Key design decisions tracked in graphify, New files, Session 2026-09-30 — Initial build + column & UI improvements, PackageMetrics
+
+### Community 28 - "DataFlow"
+Cohesion: 0.21
+Nodes (8): DataFlow, build_graph_data(), _category(), render_html(), render_svg(), _topo_levels(), _trunc(), _xe()
 
 ## Knowledge Gaps
-- **71 isolated node(s):** `graphify`, `Quick start`, `What it does`, `Supported dialects`, `Supported SSIS components` (+66 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 167 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **7 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **76 isolated node(s):** `graphify`, `Quick start`, `What it does`, `Left pane — SSIS package view`, `Right pane — generated dbt project` (+71 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 178 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **8 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Dialect` connect `Dialect` to `6. Target Dialect Support`, `components.py`, `engine.py`, `test_engine.py`?**
-  _High betweenness centrality (0.292) - this node is a cross-community bridge._
-- **Why does `Product Requirements Document (PRD): SSIS to dbt Migration Engine` connect `Product Requirements Document (PRD): SSIS to dbt Migration Engine` to `9. Export Architecture & dbt Project Generation`, `10. Auditing, Logging & Security`, `4. Core Conversion Architecture`, `7. User Interface & Experience (UX/UI)`, `8. Conversion Confidence & Exception Handling`, `2. Problem Statement, Goals & Non-Goals _(Proposed)_`, `5. SSIS Component to SQL Mapping Reference _(Proposed)_`, `17. Appendix`, `3. Personas & Key User Journeys _(Proposed)_`, `6. Target Dialect Support`?**
-  _High betweenness centrality (0.230) - this node is a cross-community bridge._
+- **Why does `Dialect` connect `Dialect` to `components.py`, `New files`, `Grade`, `test_engine.py`?**
+  _High betweenness centrality (0.274) - this node is a cross-community bridge._
+- **Why does `Product Requirements Document (PRD): SSIS to dbt Migration Engine` connect `Product Requirements Document (PRD): SSIS to dbt Migration Engine` to `Dialect`, `9. Export Architecture & dbt Project Generation`, `10. Auditing, Logging & Security`, `4. Core Conversion Architecture`, `7. User Interface & Experience (UX/UI)`, `8. Conversion Confidence & Exception Handling`, `2. Problem Statement, Goals & Non-Goals _(Proposed)_`, `5. SSIS Component to SQL Mapping Reference _(Proposed)_`, `17. Appendix`, `3. Personas & Key User Journeys _(Proposed)_`?**
+  _High betweenness centrality (0.215) - this node is a cross-community bridge._
 - **Are the 28 inferred relationships involving `Component` (e.g. with `Graphify community map` and `New files`) actually correct?**
   _`Component` has 28 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 20 inferred relationships involving `Grade` (e.g. with `Graphify community map` and `New files`) actually correct?**
@@ -173,4 +173,4 @@ _Questions this graph is uniquely positioned to answer:_
 - **Are the 13 inferred relationships involving `ConversionRun` (e.g. with `Graphify community map` and `New files`) actually correct?**
   _`ConversionRun` has 13 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `graphify`, `Quick start`, `What it does` to the rest of the system?**
-  _71 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _76 weakly-connected nodes found - possible documentation gaps or missing edges._
